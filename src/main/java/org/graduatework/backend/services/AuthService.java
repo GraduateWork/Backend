@@ -7,6 +7,8 @@ import org.graduatework.backend.utils.KeyStore;
 import org.graduatework.dto.DBUser;
 import org.graduatework.dto.VerificationCode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class AuthService {
 
@@ -15,11 +17,13 @@ public class AuthService {
     private static final long MILLISECONDS_IN_MINUTE = 1000 * 60;
     private Configuration config;
     private DBAdaptor dbAdaptor;
+    private PasswordEncoder encoder;
 
     @Autowired
     public AuthService(Configuration config) {
         this.config = config;
         dbAdaptor = new DBAdaptor(config.getJdbcUrl());
+        encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
     private void sendOTP(DBUser user) {
@@ -32,6 +36,7 @@ public class AuthService {
     }
 
     public void registerUser(DBUser user) throws IllegalArgumentException {
+        user.setPassword(encoder.encode(user.getPassword()));
         dbAdaptor.insertUser(user);
         sendOTP(user);
     }
