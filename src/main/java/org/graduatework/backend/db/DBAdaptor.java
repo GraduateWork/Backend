@@ -1,8 +1,11 @@
 package org.graduatework.backend.db;
 
 import org.graduatework.backend.dto.DBUser;
+import org.graduatework.backend.dto.Event;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DBAdaptor {
 
@@ -10,6 +13,9 @@ public class DBAdaptor {
     //private static final String UPDATE_USER = "UPDATE Files SET text = ? WHERE name = ?";
     private static final String INSERT_USER = "INSERT INTO Users(username, email, password, isActivated, creationTime) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)";
     private static final String ACTIVATE_USER = "UPDATE Users SET isActivated = true WHERE username = ? OR email = ?";
+
+    private static final String GET_EVENTS = "SELECT * FROM Events;";
+    private static final String GET_TAGS_BY_EVENT = "SELECT * FROM Tags WHERE (SELECT COUNT(*) FROM EventTags WHERE eventId = ? AND EventTags.tagId = Tags.tagId);";
 
     private Connection connection;
 
@@ -80,6 +86,34 @@ public class DBAdaptor {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             return false;
+        }
+    }
+
+    public boolean insertEvent(Event event) {
+        return false;
+    }
+
+    public List<Event> getEvents() {
+        try {
+            PreparedStatement statement = connection.prepareStatement(GET_EVENTS);
+            ResultSet rs = statement.executeQuery();
+            List<Event> events = new ArrayList<>();
+            while (rs.next()) {
+                events.add(new Event(rs.getString("name"), rs.getLong("startTime"),
+                        rs.getLong("endTime"), rs.getString("picUrl")));
+            }
+            for (Event event : events) {
+                PreparedStatement tagsStatement = connection.prepareStatement(GET_TAGS_BY_EVENT);
+                ResultSet tagsSet = tagsStatement.executeQuery();
+                List<String> tags = event.getTags();
+                while (tagsSet.next()) {
+                    tags.add(tagsSet.getString("name"));
+                }
+            }
+            return events;
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return null;
         }
     }
 }

@@ -1,7 +1,6 @@
 package org.graduatework.backend.services;
 
 import org.graduatework.backend.config.Configuration;
-import org.graduatework.backend.db.DBAdaptor;
 import org.graduatework.backend.dto.DBUser;
 import org.graduatework.backend.dto.VerificationCode;
 import org.graduatework.backend.utils.EmailService;
@@ -12,19 +11,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AuthService {
+public class AuthService extends BaseService {
 
     private static final String OTP_SUBJECT = "Placard One-Time Password";
     private static final String OTP_TEXT = "Your One-Time Password: ";
     private static final long MILLISECONDS_IN_MINUTE = 1000 * 60;
-    private Configuration config;
-    private DBAdaptor dbAdaptor;
     private PasswordEncoder encoder;
 
     @Autowired
     public AuthService(Configuration config) {
-        this.config = config;
-        dbAdaptor = new DBAdaptor(config.getJdbcUrl());
+        super(config);
         encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
