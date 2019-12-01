@@ -2,10 +2,10 @@ package org.graduatework.backend.services;
 
 import org.graduatework.backend.config.Configuration;
 import org.graduatework.backend.db.DBAdaptor;
-import org.graduatework.backend.utils.EmailService;
-import org.graduatework.backend.utils.KeyStore;
 import org.graduatework.backend.dto.DBUser;
 import org.graduatework.backend.dto.VerificationCode;
+import org.graduatework.backend.utils.EmailService;
+import org.graduatework.backend.utils.KeyStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
