@@ -52,7 +52,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable();
     }
 
-    @Bean
     @Override
     public UserDetailsService userDetailsService() {
         return userDetailsService;

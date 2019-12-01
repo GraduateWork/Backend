@@ -1,7 +1,7 @@
 package org.graduatework.backend.controllers;
 
 import org.graduatework.backend.services.AuthService;
-import org.graduatework.dto.DBUser;
+import org.graduatework.backend.dto.DBUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,7 +37,7 @@ public class AuthController {
         }
     }
 
-    @RequestMapping(value = "registration", method = RequestMethod.POST)
+    @RequestMapping(value = "activation", method = RequestMethod.POST)
     public void activateUser(HttpServletResponse response,
                              @RequestParam("username") String username,
                              @RequestParam("code") String code) {

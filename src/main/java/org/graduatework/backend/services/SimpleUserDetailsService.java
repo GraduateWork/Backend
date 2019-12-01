@@ -2,12 +2,13 @@ package org.graduatework.backend.services;
 
 import org.graduatework.backend.config.Configuration;
 import org.graduatework.backend.db.DBAdaptor;
-import org.graduatework.dto.DBUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
 
+@Service
 public class SimpleUserDetailsService implements UserDetailsService {
 
     private Configuration config;

@@ -1,6 +1,6 @@
 package org.graduatework.backend.utils;
 
-import org.graduatework.dto.VerificationCode;
+import org.graduatework.backend.dto.VerificationCode;
 
 import java.security.SecureRandom;
 import java.util.HashMap;

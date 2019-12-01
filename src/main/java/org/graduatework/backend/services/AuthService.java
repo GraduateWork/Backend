@@ -4,12 +4,14 @@ import org.graduatework.backend.config.Configuration;
 import org.graduatework.backend.db.DBAdaptor;
 import org.graduatework.backend.utils.EmailService;
 import org.graduatework.backend.utils.KeyStore;
-import org.graduatework.dto.DBUser;
-import org.graduatework.dto.VerificationCode;
+import org.graduatework.backend.dto.DBUser;
+import org.graduatework.backend.dto.VerificationCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
+@Service
 public class AuthService {
 
     private static final String OTP_SUBJECT = "Placard One-Time Password";
@@ -37,7 +39,7 @@ public class AuthService {
 
     public void registerUser(DBUser user) throws IllegalArgumentException {
         user.setPassword(encoder.encode(user.getPassword()));
-        dbAdaptor.insertUser(user);
+        //dbAdaptor.insertUser(user);
         sendOTP(user);
     }
 

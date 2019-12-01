@@ -1,6 +1,6 @@
 package org.graduatework.backend.db;
 
-import org.graduatework.dto.DBUser;
+import org.graduatework.backend.dto.DBUser;
 
 import java.sql.*;
 

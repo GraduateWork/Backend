@@ -1,4 +1,4 @@
-package org.graduatework.dto;
+package org.graduatework.backend.dto;
 
 public class VerificationCode {
 
