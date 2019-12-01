@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id "org.springframework.boot" version "2.1.0.RELEASE"
 }
 
 group 'org.graduatework'
@@ -10,6 +11,14 @@ sourceCompatibility = 1.8
 repositories {
     mavenCentral()
 }
+
+bootJar {
+    baseName = 'placard-spring-boot'
+    version =  '0.1.0'
+}
+
+task stage(dependsOn: ['build', 'clean'])
+build.mustRunAfter clean
 
 dependencies {
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.1.8.RELEASE'
