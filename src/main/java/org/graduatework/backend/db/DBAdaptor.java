@@ -49,10 +49,10 @@ public class DBAdaptor {
                 throw new IllegalArgumentException("Such user already exists.");
             } else {
                 PreparedStatement insertStatement = connection.prepareStatement(INSERT_USER);
-                statement.setString(1, user.getUsername());
-                statement.setString(2, user.getEmail());
-                statement.setString(3, user.getPassword());
-                statement.setBoolean(4, user.isActivated());
+                insertStatement.setString(1, user.getUsername());
+                insertStatement.setString(2, user.getEmail());
+                insertStatement.setString(3, user.getPassword());
+                insertStatement.setBoolean(4, user.isActivated());
                 int insertResult = insertStatement.executeUpdate();
                 return insertResult > 0;
             }

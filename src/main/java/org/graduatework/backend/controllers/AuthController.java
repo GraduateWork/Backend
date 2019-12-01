@@ -23,7 +23,7 @@ public class AuthController {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     }
 
-    @RequestMapping(value = "registration", method = RequestMethod.POST)
+    @RequestMapping(value = "signUp", method = RequestMethod.POST)
     public void registerUser(HttpServletResponse response,
                              @RequestBody DBUser user) {
         try {
@@ -50,5 +50,9 @@ public class AuthController {
                 exception.printStackTrace();
             }
         }
+    }
+
+    @RequestMapping(value = "", method = RequestMethod.GET)
+    public void home() {
     }
 }

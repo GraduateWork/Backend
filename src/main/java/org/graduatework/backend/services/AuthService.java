@@ -39,7 +39,7 @@ public class AuthService {
 
     public void registerUser(DBUser user) throws IllegalArgumentException {
         user.setPassword(encoder.encode(user.getPassword()));
-        //dbAdaptor.insertUser(user);
+        dbAdaptor.insertUser(user);
         sendOTP(user);
     }
 
