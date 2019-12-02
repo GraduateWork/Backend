@@ -6,15 +6,15 @@ import java.util.List;
 public class Event {
 
     private String name;
-    private long startTime;
-    private long endTime;
+    private Long startTime;
+    private Long endTime;
     private String picUrl;
     private List<String> tags = new ArrayList<>();
 
     public Event() {
     }
 
-    public Event(String name, long startTime, long endTime, String picUrl) {
+    public Event(String name, Long startTime, Long endTime, String picUrl) {
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -29,19 +29,19 @@ public class Event {
         this.name = name;
     }
 
-    public long getStartTime() {
+    public Long getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(long startTime) {
+    public void setStartTime(Long startTime) {
         this.startTime = startTime;
     }
 
-    public long getEndTime() {
+    public Long getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(long endTime) {
+    public void setEndTime(Long endTime) {
         this.endTime = endTime;
     }
 
