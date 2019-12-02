@@ -1,6 +1,7 @@
 package org.graduatework.backend.controllers;
 
 import org.graduatework.backend.dto.DBUser;
+import org.graduatework.backend.dto.UserActivation;
 import org.graduatework.backend.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -39,10 +40,9 @@ public class AuthController {
 
     @RequestMapping(value = "activation", method = RequestMethod.POST)
     public void activateUser(HttpServletResponse response,
-                             @RequestParam("username") String username,
-                             @RequestParam("code") String code) {
+                             @RequestBody UserActivation userActivation) {
         try {
-            authService.activateUser(username, code);
+            authService.activateUser(userActivation.getUsername(), userActivation.getCode());
         } catch (IllegalArgumentException e) {
             try {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getLocalizedMessage());

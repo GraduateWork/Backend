@@ -9,15 +9,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SimpleUserDetailsService implements UserDetailsService {
-
-    private Configuration config;
-    private DBAdaptor dbAdaptor;
+public class SimpleUserDetailsService extends BaseService implements UserDetailsService {
 
     @Autowired
     public SimpleUserDetailsService(Configuration config) {
-        this.config = config;
-        dbAdaptor = new DBAdaptor(config.getJdbcUrl());
+        super(config);
     }
 
     @Override
