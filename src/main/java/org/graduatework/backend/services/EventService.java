@@ -3,9 +3,11 @@ package org.graduatework.backend.services;
 import org.graduatework.backend.config.Configuration;
 import org.graduatework.backend.dto.Event;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class EventService extends BaseService {
 
     @Autowired
