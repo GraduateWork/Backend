@@ -4,6 +4,8 @@ import org.graduatework.backend.dto.DBUser;
 import org.graduatework.backend.dto.Event;
 
 import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -99,11 +101,17 @@ public class DBAdaptor {
             ResultSet rs = statement.executeQuery();
             List<Event> events = new ArrayList<>();
             while (rs.next()) {
-                events.add(new Event(rs.getString("name"), rs.getLong("startTime"),
-                        rs.getLong("endTime"), rs.getString("picUrl")));
-            }
-            for (Event event : events) {
+                long startTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(rs.getString("startTime")).getTime();
+                String endTimeString = rs.getString("endTime");
+                Long endTime = null;
+                if (endTimeString != null) {
+                    endTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(endTimeString).getTime();
+                }
+                Event event = new Event(rs.getString("name"), startTime, endTime, rs.getString("picUrl"));
+                events.add(event);
+
                 PreparedStatement tagsStatement = connection.prepareStatement(GET_TAGS_BY_EVENT);
+                tagsStatement.setInt(1, rs.getInt("eventId"));
                 ResultSet tagsSet = tagsStatement.executeQuery();
                 List<String> tags = event.getTags();
                 while (tagsSet.next()) {
@@ -111,7 +119,7 @@ public class DBAdaptor {
                 }
             }
             return events;
-        } catch (SQLException e) {
+        } catch (SQLException | ParseException e) {
             System.out.println(e.getMessage());
             return null;
         }
