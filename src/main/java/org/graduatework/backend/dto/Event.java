@@ -8,17 +8,17 @@ public class Event {
     private String name;
     private Long startTime;
     private Long endTime;
-    private String picUrl;
+    private String pictureUrl;
     private List<String> tags = new ArrayList<>();
 
     public Event() {
     }
 
-    public Event(String name, Long startTime, Long endTime, String picUrl) {
+    public Event(String name, Long startTime, Long endTime, String pictureUrl) {
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.picUrl = picUrl;
+        this.pictureUrl = pictureUrl;
     }
 
     public String getName() {
@@ -45,12 +45,12 @@ public class Event {
         this.endTime = endTime;
     }
 
-    public String getPicUrl() {
-        return picUrl;
+    public String getPictureUrl() {
+        return pictureUrl;
     }
 
-    public void setPicUrl(String picUrl) {
-        this.picUrl = picUrl;
+    public void setPictureUrl(String pictureUrl) {
+        this.pictureUrl = pictureUrl;
     }
 
     public List<String> getTags() {
