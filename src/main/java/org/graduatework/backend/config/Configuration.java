@@ -10,11 +10,22 @@ public class Configuration {
     @Value("${jdbc.url}")
     private String jdbcUrl;
 
+    @Value("${datasource.url}")
+    private String dataSourceUrl;
+
     public String getJdbcUrl() {
         return jdbcUrl;
     }
 
     public void setJdbcUrl(String jdbcUrl) {
         this.jdbcUrl = jdbcUrl;
+    }
+
+    public String getDataSourceUrl() {
+        return dataSourceUrl;
+    }
+
+    public void setDataSourceUrl(String dataSourceUrl) {
+        this.dataSourceUrl = dataSourceUrl;
     }
 }

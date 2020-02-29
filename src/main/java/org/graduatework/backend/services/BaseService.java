@@ -3,7 +3,7 @@ package org.graduatework.backend.services;
 import org.graduatework.backend.config.Configuration;
 import org.graduatework.backend.db.DBAdaptor;
 
-public class BaseService {
+public abstract class BaseService {
 
     protected Configuration config;
     protected DBAdaptor dbAdaptor;
