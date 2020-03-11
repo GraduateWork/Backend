@@ -13,7 +13,6 @@ public class BackendApplication {
 
     private static final long DAY = 24 * 60 * 60 * 1000L;
 
-    @Autowired
     private static DataService dataService;
 
     private static void requestData() {
@@ -26,6 +25,7 @@ public class BackendApplication {
     }
 
     public static void main(String[] args) {
+        SpringApplication.run(BackendApplication.class, args);
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
@@ -33,6 +33,10 @@ public class BackendApplication {
                 requestData();
             }
         }, 0, DAY);
-        SpringApplication.run(BackendApplication.class, args);
+    }
+
+    @Autowired
+    public void setDataService(DataService dataService) {
+        BackendApplication.dataService = dataService;
     }
 }
