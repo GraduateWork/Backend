@@ -1,32 +1,42 @@
 package org.graduatework.backend.dto;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.util.*;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Event {
-
-    private String name;
+    private String title;
     private Long startTime;
     private Long endTime;
-    private String pictureUrl;
-    private List<String> tags = new ArrayList<>();
+    private String imgSrc;
+    private String description;
+    private Map<String, String> details = new HashMap<>();
+
+    public static final Set<String> jsonFieldNames = new HashSet<>(Arrays.asList("title", "startTime", "endTime", "imgSrc", "description"));
 
     public Event() {
+        title = "";
+        startTime = 0L;
+        endTime = 0L;
+        imgSrc = "";
+        description = "";
     }
 
-    public Event(String name, Long startTime, Long endTime, String pictureUrl) {
-        this.name = name;
+    public Event(String title, Long startTime, Long endTime, String imgSrc) {
+        this.title = title;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.pictureUrl = pictureUrl;
+        this.imgSrc = imgSrc;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public Long getStartTime() {
@@ -45,19 +55,24 @@ public class Event {
         this.endTime = endTime;
     }
 
-    public String getPictureUrl() {
-        return pictureUrl;
+    public String getImgSrc() {
+        return imgSrc;
     }
 
-    public void setPictureUrl(String pictureUrl) {
-        this.pictureUrl = pictureUrl;
+    public void setImgSrc(String imgSrc) {
+        this.imgSrc = imgSrc;
     }
 
-    public List<String> getTags() {
-        return tags;
+    public String getDescription() {
+        return description;
     }
 
-    public void setTags(List<String> tags) {
-        this.tags = tags;
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    @JsonIgnore
+    public Map<String, String> getDetails() {
+        return details;
     }
 }

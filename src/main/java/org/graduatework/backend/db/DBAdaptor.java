@@ -112,11 +112,6 @@ public class DBAdaptor {
 
                 PreparedStatement tagsStatement = connection.prepareStatement(GET_TAGS_BY_EVENT);
                 tagsStatement.setInt(1, rs.getInt("eventId"));
-                ResultSet tagsSet = tagsStatement.executeQuery();
-                List<String> tags = event.getTags();
-                while (tagsSet.next()) {
-                    tags.add(tagsSet.getString("name"));
-                }
             }
             return events;
         } catch (SQLException | ParseException e) {
