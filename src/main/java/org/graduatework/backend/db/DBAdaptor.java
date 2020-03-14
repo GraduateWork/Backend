@@ -27,6 +27,7 @@ public class DBAdaptor {
     private static final String CLEAR_EVENT_DETAILS = "TRUNCATE \"EventDetails\";";
     private static final String INSERT_EVENT_DETAILS = "INSERT INTO \"EventDetails\" (\"propertyKey\", \"propertyValue\", \"eventId\") "
             + "VALUES(?, ?, ?)";
+    private static final String GET_EVENT_DETAILS_BY_EVENT = "SELECT * FROM \"EventDetails\" WHERE \"eventId\" = ?;";
 
     private static final Random rand = new Random(System.currentTimeMillis());
 
@@ -172,9 +173,15 @@ public class DBAdaptor {
             ResultSet rs = statement.executeQuery();
             List<Event> events = new ArrayList<>();
             while (rs.next()) {
+                int eventId = rs.getInt("eventId");
                 Event event = new Event(rs.getString("title"), rs.getString("startTime"), rs.getString("endTime"),
                         rs.getString("imgSrc"), rs.getString("description"), rs.getString("type"));
-
+                PreparedStatement detailsStatement = connection.prepareStatement(GET_EVENT_DETAILS_BY_EVENT);
+                detailsStatement.setInt(1, eventId);
+                ResultSet details = detailsStatement.executeQuery();
+                while (details.next()) {
+                    event.getDetails().put(details.getString("propertyKey"), details.getString("propertyValue"));
+                }
                 events.add(event);
 
 //                PreparedStatement tagsStatement = connection.prepareStatement(GET_TAGS_BY_EVENT);
