@@ -8,27 +8,31 @@ import java.util.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Event {
     private String title;
-    private Long startTime;
-    private Long endTime;
+    private String startTime;
+    private String endTime;
     private String imgSrc;
     private String description;
+    private String type;
     private Map<String, String> details = new HashMap<>();
 
     public static final Set<String> jsonFieldNames = new HashSet<>(Arrays.asList("title", "startTime", "endTime", "imgSrc", "description"));
 
     public Event() {
         title = "";
-        startTime = 0L;
-        endTime = 0L;
+        startTime = "";
+        endTime = "";
         imgSrc = "";
         description = "";
+        type = "";
     }
 
-    public Event(String title, Long startTime, Long endTime, String imgSrc) {
+    public Event(String title, String startTime, String endTime, String imgSrc, String description, String type) {
         this.title = title;
         this.startTime = startTime;
         this.endTime = endTime;
         this.imgSrc = imgSrc;
+        this.description = description;
+        this.type = type;
     }
 
     public String getTitle() {
@@ -39,19 +43,19 @@ public class Event {
         this.title = title;
     }
 
-    public Long getStartTime() {
+    public String getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(Long startTime) {
+    public void setStartTime(String startTime) {
         this.startTime = startTime;
     }
 
-    public Long getEndTime() {
+    public String getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(Long endTime) {
+    public void setEndTime(String endTime) {
         this.endTime = endTime;
     }
 
@@ -74,5 +78,13 @@ public class Event {
     @JsonIgnore
     public Map<String, String> getDetails() {
         return details;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

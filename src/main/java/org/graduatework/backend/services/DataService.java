@@ -56,7 +56,8 @@ public class DataService extends BaseService {
 
     @SuppressWarnings("unchecked")
     private void parseData(String data) throws IOException, ParseException {
-        List<Event> events = mapper.readValue(data, new TypeReference<List<Event>>(){});
+        List<Event> events = mapper.readValue(data, new TypeReference<>() {
+        });
         JSONArray jsonArray = (JSONArray) jsonParser.parse(data);
         int eventNum = 0;
         for (int i = 0; i < jsonArray.size(); i++) {
@@ -72,6 +73,7 @@ public class DataService extends BaseService {
     }
 
     private void writeDataToDB(List<Event> events) {
-        // TODO
+        dbAdaptor.clearEvents();
+        dbAdaptor.insertEvents(events);
     }
 }

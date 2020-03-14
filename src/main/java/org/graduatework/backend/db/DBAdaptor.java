@@ -1,31 +1,36 @@
 package org.graduatework.backend.db;
 
+import org.graduatework.backend.config.DatabaseConfig;
 import org.graduatework.backend.dto.DBUser;
 import org.graduatework.backend.dto.Event;
 
-import java.sql.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DBAdaptor {
 
     private static final String GET_USER = "SELECT * FROM Users WHERE username = ? OR email = ?;";
-    //private static final String UPDATE_USER = "UPDATE Files SET text = ? WHERE name = ?";
+    //private static final String UPDATE_USER = "UPDATE Files SET text = ? WHERE name = ?;";
     private static final String INSERT_USER = "INSERT INTO Users(username, email, password, isActivated, creationTime) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)";
-    private static final String ACTIVATE_USER = "UPDATE Users SET isActivated = true WHERE username = ? OR email = ?";
+    private static final String ACTIVATE_USER = "UPDATE Users SET isActivated = true WHERE username = ? OR email = ?;";
 
     private static final String GET_EVENTS = "SELECT * FROM Events;";
     private static final String GET_TAGS_BY_EVENT = "SELECT * FROM Tags WHERE (SELECT COUNT(*) FROM EventTags WHERE eventId = ? AND EventTags.tagId = Tags.tagId);";
+    private static final String INSERT_EVENT = "INSERT INTO Events(title, startTime, endTime, imgSrc, description, type) "
+            + "VALUES(?, ?, ?, ?, ?, ?)";
+    private static final String CLEAR_EVENTS = "TRUNCATE Events;";
 
     private Connection connection;
 
     public DBAdaptor(String dbUrl) {
         try {
-            connection = DriverManager.getConnection(dbUrl);
+            connection = DatabaseConfig.getDataSource().getConnection();
         } catch (SQLException e) {
-            System.out.println("Cannot connect to DB: " + e.getMessage());
+            System.err.println("Cannot connect to DB: " + e.getMessage());
         }
     }
 
@@ -42,7 +47,7 @@ public class DBAdaptor {
                 throw new IllegalArgumentException("Such user doesn't exist.");
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
             return null;
         }
     }
@@ -65,7 +70,7 @@ public class DBAdaptor {
                 return insertResult > 0;
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
             return false;
         }
     }
@@ -86,13 +91,47 @@ public class DBAdaptor {
                 throw new IllegalArgumentException("Such user doesn't exist.");
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
             return false;
         }
     }
 
-    public boolean insertEvent(Event event) {
-        return false;
+    public boolean clearEvents() {
+        try {
+            PreparedStatement statement = connection.prepareStatement(CLEAR_EVENTS);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    public boolean insertEvents(List<Event> events) {
+        try {
+            PreparedStatement statement = connection.prepareStatement(INSERT_EVENT);
+            int count = 0;
+
+            for (Event event : events) {
+                statement.setString(1, event.getTitle());
+                statement.setString(2, event.getStartTime());
+                statement.setString(3, event.getEndTime());
+                statement.setString(4, event.getImgSrc());
+                statement.setString(5, event.getDescription());
+                statement.setString(6, event.getType());
+
+                statement.addBatch();
+                count++;
+                // execute every 100 rows or less
+                if (count % 100 == 0 || count == events.size()) {
+                    statement.executeBatch();
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
+            return false;
+        }
+        return true;
     }
 
     public List<Event> getEvents() {
@@ -101,21 +140,16 @@ public class DBAdaptor {
             ResultSet rs = statement.executeQuery();
             List<Event> events = new ArrayList<>();
             while (rs.next()) {
-                long startTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(rs.getString("startTime")).getTime();
-                String endTimeString = rs.getString("endTime");
-                Long endTime = null;
-                if (endTimeString != null) {
-                    endTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(endTimeString).getTime();
-                }
-                Event event = new Event(rs.getString("name"), startTime, endTime, rs.getString("picUrl"));
+                Event event = new Event(rs.getString("title"), rs.getString("startTime"), rs.getString("endTime"),
+                        rs.getString("imgSrc"), rs.getString("description"), rs.getString("type"));
                 events.add(event);
 
-                PreparedStatement tagsStatement = connection.prepareStatement(GET_TAGS_BY_EVENT);
-                tagsStatement.setInt(1, rs.getInt("eventId"));
+//                PreparedStatement tagsStatement = connection.prepareStatement(GET_TAGS_BY_EVENT);
+//                tagsStatement.setInt(1, rs.getInt("eventId"));
             }
             return events;
-        } catch (SQLException | ParseException e) {
-            System.out.println(e.getMessage());
+        } catch (SQLException e) {
+            System.err.println(e.getMessage());
             return null;
         }
     }
