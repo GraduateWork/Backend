@@ -7,6 +7,7 @@ import java.util.*;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Event {
+    private int eventId;
     private String title;
     private String startTime;
     private String endTime;
@@ -18,6 +19,7 @@ public class Event {
     public static final Set<String> jsonFieldNames = new HashSet<>(Arrays.asList("title", "startTime", "endTime", "imgSrc", "description"));
 
     public Event() {
+        eventId = 0;
         title = "";
         startTime = "";
         endTime = "";
@@ -86,5 +88,14 @@ public class Event {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    @JsonIgnore
+    public int getEventId() {
+        return eventId;
+    }
+
+    public void setEventId(int eventId) {
+        this.eventId = eventId;
     }
 }
