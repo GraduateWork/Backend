@@ -40,15 +40,15 @@ public class DataService extends BaseService {
     public void requestData() throws IOException, InterruptedException, ParseException {
         HttpRequest request = HttpRequest.newBuilder(URI.create(config.getDataSourceUrl() + DATA)).GET().build();
         HttpResponse<String> response;
-        /*do {
+        do {
             response = httpClient.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
             System.out.println("Ping data scraper: " + response.statusCode());
             if (response.statusCode() != 200)
                 Thread.sleep(PING_PERIODICITY);
         } while (response.statusCode() != 200);
-        parseData(response.body());*/
-        Scanner sc = new Scanner(new BufferedInputStream(new FileInputStream(new File("output.txt"))));
-        parseData(sc.nextLine());
+        parseData(response.body());
+//        Scanner sc = new Scanner(new BufferedInputStream(new FileInputStream(new File("output.txt"))));
+//        parseData(sc.nextLine());
         /*PrintWriter writer = new PrintWriter(new File("output.txt"));
         writer.println(response.body());
         writer.flush();
