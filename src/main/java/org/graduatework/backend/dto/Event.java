@@ -1,63 +1,100 @@
 package org.graduatework.backend.dto;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.util.*;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Event {
+    private int eventId;
+    private String title;
+    private String startTime;
+    private String endTime;
+    private String imgSrc;
+    private String description;
+    private String type;
+    private Map<String, String> details = new HashMap<>();
 
-    private String name;
-    private Long startTime;
-    private Long endTime;
-    private String pictureUrl;
-    private List<String> tags = new ArrayList<>();
+    public static final Set<String> jsonFieldNames = new HashSet<>(Arrays.asList("title", "startTime", "endTime", "imgSrc", "description", "type"));
 
     public Event() {
+        eventId = 0;
+        title = "";
+        startTime = "";
+        endTime = "";
+        imgSrc = "";
+        description = "";
+        type = "";
     }
 
-    public Event(String name, Long startTime, Long endTime, String pictureUrl) {
-        this.name = name;
+    public Event(String title, String startTime, String endTime, String imgSrc, String description, String type) {
+        this.title = title;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.pictureUrl = pictureUrl;
+        this.imgSrc = imgSrc;
+        this.description = description;
+        this.type = type;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public Long getStartTime() {
+    public String getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(Long startTime) {
+    public void setStartTime(String startTime) {
         this.startTime = startTime;
     }
 
-    public Long getEndTime() {
+    public String getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(Long endTime) {
+    public void setEndTime(String endTime) {
         this.endTime = endTime;
     }
 
-    public String getPictureUrl() {
-        return pictureUrl;
+    public String getImgSrc() {
+        return imgSrc;
     }
 
-    public void setPictureUrl(String pictureUrl) {
-        this.pictureUrl = pictureUrl;
+    public void setImgSrc(String imgSrc) {
+        this.imgSrc = imgSrc;
     }
 
-    public List<String> getTags() {
-        return tags;
+    public String getDescription() {
+        return description;
     }
 
-    public void setTags(List<String> tags) {
-        this.tags = tags;
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Map<String, String> getDetails() {
+        return details;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    @JsonIgnore
+    public int getEventId() {
+        return eventId;
+    }
+
+    public void setEventId(int eventId) {
+        this.eventId = eventId;
     }
 }
