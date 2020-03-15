@@ -16,7 +16,7 @@ public class Event {
     private String type;
     private Map<String, String> details = new HashMap<>();
 
-    public static final Set<String> jsonFieldNames = new HashSet<>(Arrays.asList("title", "startTime", "endTime", "imgSrc", "description"));
+    public static final Set<String> jsonFieldNames = new HashSet<>(Arrays.asList("title", "startTime", "endTime", "imgSrc", "description", "type"));
 
     public Event() {
         eventId = 0;
@@ -77,7 +77,6 @@ public class Event {
         this.description = description;
     }
 
-    @JsonIgnore
     public Map<String, String> getDetails() {
         return details;
     }

@@ -41,7 +41,7 @@ public class DBAdaptor {
             statement.setString(1, username);
             statement.setString(2, username);
             ResultSet rs = statement.executeQuery();
-            if (!rs.isClosed() && rs.getString("username") != null) {
+            if (rs.next() && !rs.isClosed() && rs.getString("username") != null) {
                 return new DBUser(rs.getString("username"), rs.getString("email"),
                         rs.getString("password"), rs.getBoolean("isActivated"), rs.getLong("creationTime"));
             } else {
