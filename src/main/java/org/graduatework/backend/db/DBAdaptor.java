@@ -176,6 +176,7 @@ public class DBAdaptor {
                 int eventId = rs.getInt("eventId");
                 Event event = new Event(rs.getString("title"), rs.getString("startTime"), rs.getString("endTime"),
                         rs.getString("imgSrc"), rs.getString("description"), rs.getString("type"));
+                event.setEventId(eventId);
                 PreparedStatement detailsStatement = connection.prepareStatement(GET_EVENT_DETAILS_BY_EVENT);
                 detailsStatement.setInt(1, eventId);
                 ResultSet details = detailsStatement.executeQuery();
