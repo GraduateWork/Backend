@@ -89,7 +89,6 @@ public class Event {
         this.type = type;
     }
 
-    @JsonIgnore
     public int getEventId() {
         return eventId;
     }
