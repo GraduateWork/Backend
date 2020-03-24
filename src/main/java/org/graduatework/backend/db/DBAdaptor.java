@@ -35,8 +35,9 @@ public class DBAdaptor {
     }
 
     public DBUser getUser(String username) {
+        Connection connection = null;
         try {
-            Connection connection = DatabaseConfig.getDataSource().getConnection();
+            connection = DatabaseConfig.getDataSource().getConnection();
             PreparedStatement statement = connection.prepareStatement(GET_USER);
             statement.setString(1, username);
             statement.setString(2, username);
@@ -51,12 +52,21 @@ public class DBAdaptor {
             e.printStackTrace();
             System.err.println(e.getMessage());
             return null;
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
     public boolean insertUser(DBUser user) throws IllegalArgumentException {
+        Connection connection = null;
         try {
-            Connection connection = DatabaseConfig.getDataSource().getConnection();
+            connection = DatabaseConfig.getDataSource().getConnection();
             PreparedStatement statement = connection.prepareStatement(GET_USER);
             statement.setString(1, user.getUsername());
             statement.setString(2, user.getEmail());
@@ -76,12 +86,21 @@ public class DBAdaptor {
             e.printStackTrace();
             System.err.println(e.getMessage());
             return false;
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
     public boolean activateUser(String username) throws IllegalArgumentException {
+        Connection connection = null;
         try {
-            Connection connection = DatabaseConfig.getDataSource().getConnection();
+            connection = DatabaseConfig.getDataSource().getConnection();
             PreparedStatement statement = connection.prepareStatement(GET_USER);
             statement.setString(1, username);
             statement.setString(2, username);
@@ -103,8 +122,9 @@ public class DBAdaptor {
     }
 
     public boolean clearEvents() {
+        Connection connection = null;
         try {
-            Connection connection = DatabaseConfig.getDataSource().getConnection();
+            connection = DatabaseConfig.getDataSource().getConnection();
             PreparedStatement statement = connection.prepareStatement(CLEAR_EVENTS);
             statement.executeUpdate();
             statement = connection.prepareStatement(CLEAR_EVENT_DETAILS);
@@ -113,13 +133,22 @@ public class DBAdaptor {
             e.printStackTrace();
             System.err.println(e.getMessage());
             return false;
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         return true;
     }
 
     public boolean insertEvents(List<Event> events) {
+        Connection connection = null;
         try {
-            Connection connection = DatabaseConfig.getDataSource().getConnection();
+            connection = DatabaseConfig.getDataSource().getConnection();
             PreparedStatement eventStatement = connection.prepareStatement(INSERT_EVENT);
             PreparedStatement detailsStatement = connection.prepareStatement(INSERT_EVENT_DETAILS);
             int eventCount = 0;
@@ -162,13 +191,22 @@ public class DBAdaptor {
             e.printStackTrace();
             System.err.println(e.getMessage());
             return false;
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         return true;
     }
 
     public List<Event> getEvents() {
+        Connection connection = null;
         try {
-            Connection connection = DatabaseConfig.getDataSource().getConnection();
+            connection = DatabaseConfig.getDataSource().getConnection();
             PreparedStatement statement = connection.prepareStatement(GET_EVENTS);
             ResultSet rs = statement.executeQuery();
             List<Event> events = new ArrayList<>();
@@ -193,6 +231,14 @@ public class DBAdaptor {
             e.printStackTrace();
             System.err.println(e.getMessage());
             return null;
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }
