@@ -1,4 +1,4 @@
-package org.graduatework.backend.dto;
+package org.graduatework.backend.db;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -6,7 +6,7 @@ import java.util.*;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Event {
-    private int eventId;
+    private Integer eventId = null;
     private String title;
     private String startTime;
     private String endTime;
@@ -18,7 +18,7 @@ public class Event {
     public static final Set<String> jsonFieldNames = new HashSet<>(Arrays.asList("title", "startTime", "endTime", "imgSrc", "description", "type"));
 
     public Event() {
-        eventId = 0;
+        eventId = null;
         title = "";
         startTime = "";
         endTime = "";
@@ -88,11 +88,11 @@ public class Event {
         this.type = type;
     }
 
-    public int getEventId() {
+    public Integer getEventId() {
         return eventId;
     }
 
-    public void setEventId(int eventId) {
+    public void setEventId(Integer eventId) {
         this.eventId = eventId;
     }
 }

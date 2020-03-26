@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.graduatework.backend.config.Configuration;
-import org.graduatework.backend.dto.Event;
+import org.graduatework.backend.db.Event;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -17,8 +17,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 @Service
 public class DataService extends BaseService {
@@ -70,11 +69,26 @@ public class DataService extends BaseService {
             }
             eventNum++;
         }
-        writeDataToDB(events);
+        mergeData(events);
     }
 
-    private void writeDataToDB(List<Event> events) {
-        dbAdaptor.clearEvents();
+    private void mergeData(List<Event> events) {
+        List<Event> prevEvents = dbAdaptor.getEvents();
+        List<Event> result = new ArrayList<>();
+        Map<String, Event> eventsMap = new HashMap<>();
+        for (int i = 0; i < prevEvents.size(); i++) {
+            eventsMap.put(prevEvents.get(i).getType() + prevEvents.get(i).getTitle(), prevEvents.get(i));
+        }
+        for (int i = 0; i < events.size(); i++) {
+            Event event = events.get(i);
+            String key = event.getType() + event.getTitle();
+            Event prevEvent = eventsMap.get(key);
+            if (prevEvent != null) {
+                event.setEventId(prevEvent.getEventId());
+                eventsMap.remove(key);
+            }
+        }
+        dbAdaptor.deleteEvents(eventsMap.values());
         dbAdaptor.insertEvents(events);
     }
 }

@@ -1,8 +1,11 @@
 package org.graduatework.backend.controllers;
 
-import org.graduatework.backend.dto.Event;
+import org.graduatework.backend.db.DBUser;
+import org.graduatework.backend.db.Event;
+import org.graduatework.backend.dto.EventDto;
 import org.graduatework.backend.services.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,8 +25,28 @@ public class EventController {
     }
 
     @RequestMapping(value = "events", method = RequestMethod.GET)
-    public List<Event> getEvents(HttpServletResponse response) {
-        List<Event> events = eventService.getEvents();
+    public List<EventDto> getEvents(HttpServletResponse response) {
+        DBUser user = null;
+        try {
+            user = (DBUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        } catch (Throwable e) {
+        }
+        List<EventDto> events = eventService.getEvents(user == null ? null : user.getUsername());
+        if (events == null) {
+            try {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Cannot get events");
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+        return events;
+    }
+
+    @RequestMapping(value = "favorites", method = RequestMethod.GET)
+    public List<EventDto> getFavorites(HttpServletResponse response) {
+        DBUser user = (DBUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<EventDto> events = eventService.getEventsByUser(user.getUsername());
         if (events == null) {
             try {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Cannot get events");

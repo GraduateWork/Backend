@@ -1,4 +1,4 @@
-package org.graduatework.backend.dto;
+package org.graduatework.backend.db;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;

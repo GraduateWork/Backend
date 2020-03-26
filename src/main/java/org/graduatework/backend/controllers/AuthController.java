@@ -1,6 +1,6 @@
 package org.graduatework.backend.controllers;
 
-import org.graduatework.backend.dto.DBUser;
+import org.graduatework.backend.db.DBUser;
 import org.graduatework.backend.dto.UserActivation;
 import org.graduatework.backend.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
