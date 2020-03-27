@@ -29,7 +29,8 @@ public class EventDto {
         isFavorite = false;
     }
 
-    public EventDto(int eventId, String title, String startTime, String endTime, String imgSrc, String description, String type, boolean isFavorite) {
+    public EventDto(int eventId, String title, String startTime, String endTime, String imgSrc, String description, String type, boolean isFavorite, Map<String, String> details) {
+        this.eventId = eventId;
         this.title = title;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -37,6 +38,7 @@ public class EventDto {
         this.description = description;
         this.type = type;
         this.isFavorite = isFavorite;
+        this.details = details;
     }
 
     public String getTitle() {

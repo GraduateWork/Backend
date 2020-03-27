@@ -29,7 +29,7 @@ public class EventService extends BaseService {
         for (int i = 0; i < dbEvents.size(); i++) {
             Event dbEvent = dbEvents.get(i);
             EventDto event = new EventDto(dbEvent.getEventId(), dbEvent.getTitle(), dbEvent.getStartTime(), dbEvent.getEndTime(),
-                    dbEvent.getImgSrc(), dbEvent.getDescription(), dbEvent.getType(), false);
+                    dbEvent.getImgSrc(), dbEvent.getDescription(), dbEvent.getType(), false, dbEvent.getDetails());
             events.add(event);
         }
         if (username != null) {
@@ -54,7 +54,7 @@ public class EventService extends BaseService {
         for (int i = 0; i < dbEvents.size(); i++) {
             Event dbEvent = dbEvents.get(i);
             EventDto event = new EventDto(dbEvent.getEventId(), dbEvent.getTitle(), dbEvent.getStartTime(), dbEvent.getEndTime(),
-                    dbEvent.getImgSrc(), dbEvent.getDescription(), dbEvent.getType(), true);
+                    dbEvent.getImgSrc(), dbEvent.getDescription(), dbEvent.getType(), true, dbEvent.getDetails());
             events.add(event);
         }
         return events;
