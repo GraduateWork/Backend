@@ -32,10 +32,14 @@ public class DBAdaptor {
     private static final String GET_EVENT_DETAILS_BY_EVENT = "SELECT * FROM \"EventDetails\" WHERE \"eventId\" = ?;";
     private static final String DELETE_EVENT = "DELETE FROM \"Events\" WHERE \"eventId\" = ?;";
     private static final String DELETE_EVENT_DETAILS = "DELETE FROM \"EventDetails\" WHERE \"eventId\" = ?;";
-    private static final String DELETE_USER_EVENT = "DELETE FROM \"UserEvents\" WHERE \"eventId\" = ?;";
+    private static final String DELETE_USER_EVENTS = "DELETE FROM \"UserEvents\" WHERE \"eventId\" = ?;";
 
     private static final String UPDATE_EVENT = "UPDATE \"Events\" SET \"title\" = ?, \"startTime\" = ?, \"endTime\" = ?, " +
             "\"imgSrc\" = ?, \"description\" = ?, \"type\" = ? WHERE \"eventId\" = ?;";
+
+    private static final String DELETE_USER_EVENT = "DELETE FROM \"UserEvents\" WHERE \"userId\" = ? AND \"eventId\" = ?;";
+    private static final String INSERT_USER_EVENT = "INSERT INTO \"UserEvents\" (\"userId\", \"eventId\") VALUES (?, ?);";
+    private static final String GET_USER_EVENT = "SELECT * FROM \"UserEvents\" WHERE \"userId\" = ? AND \"eventId\" = ?;";
 
     private static final Random rand = new Random(System.currentTimeMillis());
 
@@ -51,7 +55,7 @@ public class DBAdaptor {
             statement.setString(2, username);
             ResultSet rs = statement.executeQuery();
             if (rs.next() && !rs.isClosed() && rs.getString("username") != null) {
-                return new DBUser(rs.getString("username"), rs.getString("email"),
+                return new DBUser(rs.getInt("userId"), rs.getString("username"), rs.getString("email"),
                         rs.getString("password"), rs.getBoolean("isActivated"), rs.getLong("creationTime"));
             } else {
                 throw new IllegalArgumentException("Such user doesn't exist.");
@@ -126,6 +130,14 @@ public class DBAdaptor {
             e.printStackTrace();
             System.err.println(e.getMessage());
             return false;
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
@@ -158,7 +170,7 @@ public class DBAdaptor {
         try {
             for (Event event : events) {
                 connection = DatabaseConfig.getDataSource().getConnection();
-                PreparedStatement statement = connection.prepareStatement(DELETE_USER_EVENT);
+                PreparedStatement statement = connection.prepareStatement(DELETE_USER_EVENTS);
                 statement.setInt(1, event.getEventId());
                 statement.executeUpdate();
                 statement = connection.prepareStatement(DELETE_EVENT_DETAILS);
@@ -342,6 +354,82 @@ public class DBAdaptor {
             e.printStackTrace();
             System.err.println(e.getMessage());
             return null;
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public boolean addEventForUser(String username, int eventId) throws IllegalArgumentException {
+        Connection connection = null;
+        try {
+            DBUser user = getUser(username);
+            if (user == null) {
+                return false;
+            }
+            int userId = user.getUserId();
+            connection = DatabaseConfig.getDataSource().getConnection();
+            PreparedStatement statement = connection.prepareStatement(GET_USER_EVENT);
+            statement.setInt(1, userId);
+            statement.setInt(2, eventId);
+            ResultSet rs = statement.executeQuery();
+            if (!rs.isClosed() && rs.getInt("userId") == userId) {
+                return false;
+            } else {
+                PreparedStatement insertStatement = connection.prepareStatement(INSERT_USER_EVENT);
+                insertStatement.setString(1, username);
+                insertStatement.setString(2, username);
+                insertStatement.setInt(3, eventId);
+                int insertResult = insertStatement.executeUpdate();
+                return insertResult > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.err.println(e.getMessage());
+            return false;
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public boolean removeEventForUser(String username, int eventId) throws IllegalArgumentException {
+        Connection connection = null;
+        try {
+            DBUser user = getUser(username);
+            if (user == null) {
+                return false;
+            }
+            int userId = user.getUserId();
+            connection = DatabaseConfig.getDataSource().getConnection();
+            PreparedStatement statement = connection.prepareStatement(GET_USER_EVENT);
+            statement.setInt(1, userId);
+            statement.setInt(2, eventId);
+            ResultSet rs = statement.executeQuery();
+            if (!rs.isClosed() && rs.getInt("userId") == userId) {
+                return false;
+            } else {
+                PreparedStatement deleteStatement = connection.prepareStatement(DELETE_USER_EVENT);
+                deleteStatement.setString(1, username);
+                deleteStatement.setString(2, username);
+                deleteStatement.setInt(3, eventId);
+                int deleteResult = deleteStatement.executeUpdate();
+                return deleteResult > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.err.println(e.getMessage());
+            return false;
         } finally {
             if (connection != null) {
                 try {

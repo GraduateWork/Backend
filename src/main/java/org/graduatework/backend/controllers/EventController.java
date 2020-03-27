@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
@@ -56,5 +57,31 @@ public class EventController {
             }
         }
         return events;
+    }
+
+    @RequestMapping(value = "favorites", method = RequestMethod.POST)
+    public void addFavorites(HttpServletResponse response,
+                                @RequestParam("eventId") int eventId) {
+        DBUser user = (DBUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (!eventService.addEventForUser(user.getUsername(), eventId)) {
+            try {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Cannot add favorites.");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @RequestMapping(value = "favorites", method = RequestMethod.DELETE)
+    public void removeFavorites(HttpServletResponse response,
+                                @RequestParam("eventId") int eventId) {
+        DBUser user = (DBUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (eventService.removeEventForUser(user.getUsername(), eventId)) {
+            try {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Cannot remove favorites.");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

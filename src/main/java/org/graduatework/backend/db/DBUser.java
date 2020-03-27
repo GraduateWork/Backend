@@ -8,6 +8,7 @@ import java.util.Collection;
 
 public class DBUser implements UserDetails {
 
+    private int userId;
     private String username;
     private String email;
     private String password;
@@ -24,7 +25,7 @@ public class DBUser implements UserDetails {
         this.isActivated = false;
     }
 
-    public DBUser(String username, String email, String password, boolean isActivated, long creationTime) {
+    public DBUser(int userId, String username, String email, String password, boolean isActivated, long creationTime) {
         this.username = username;
         this.email = email;
         this.password = password;
@@ -96,5 +97,14 @@ public class DBUser implements UserDetails {
 
     public void setCreationTime(long creationTime) {
         this.creationTime = creationTime;
+    }
+
+    @JsonIgnore
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 }
