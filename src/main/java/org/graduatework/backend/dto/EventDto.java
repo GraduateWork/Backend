@@ -5,35 +5,40 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.*;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Event {
-    private int eventId;
+public class EventDto {
+    private Integer eventId = null;
     private String title;
     private String startTime;
     private String endTime;
     private String imgSrc;
     private String description;
     private String type;
+    private boolean isFavorite;
     private Map<String, String> details = new HashMap<>();
 
     public static final Set<String> jsonFieldNames = new HashSet<>(Arrays.asList("title", "startTime", "endTime", "imgSrc", "description", "type"));
 
-    public Event() {
-        eventId = 0;
+    public EventDto() {
+        eventId = null;
         title = "";
         startTime = "";
         endTime = "";
         imgSrc = "";
         description = "";
         type = "";
+        isFavorite = false;
     }
 
-    public Event(String title, String startTime, String endTime, String imgSrc, String description, String type) {
+    public EventDto(int eventId, String title, String startTime, String endTime, String imgSrc, String description, String type, boolean isFavorite, Map<String, String> details) {
+        this.eventId = eventId;
         this.title = title;
         this.startTime = startTime;
         this.endTime = endTime;
         this.imgSrc = imgSrc;
         this.description = description;
         this.type = type;
+        this.isFavorite = isFavorite;
+        this.details = details;
     }
 
     public String getTitle() {
@@ -88,11 +93,19 @@ public class Event {
         this.type = type;
     }
 
-    public int getEventId() {
+    public Integer getEventId() {
         return eventId;
     }
 
-    public void setEventId(int eventId) {
+    public void setEventId(Integer eventId) {
         this.eventId = eventId;
+    }
+
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        isFavorite = favorite;
     }
 }

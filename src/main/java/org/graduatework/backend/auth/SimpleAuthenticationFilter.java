@@ -2,7 +2,7 @@ package org.graduatework.backend.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
-import org.graduatework.backend.dto.DBUser;
+import org.graduatework.backend.db.DBUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

@@ -1,7 +1,7 @@
 package org.graduatework.backend.services;
 
 import org.graduatework.backend.config.Configuration;
-import org.graduatework.backend.dto.DBUser;
+import org.graduatework.backend.db.DBUser;
 import org.graduatework.backend.dto.VerificationCode;
 import org.graduatework.backend.utils.EmailService;
 import org.graduatework.backend.utils.KeyStore;
