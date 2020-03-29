@@ -64,7 +64,10 @@ public class DataService extends BaseService {
             JSONObject jsonObject = (JSONObject) jsonArray.get(i);
             for (String key : (Iterable<String>) jsonObject.keySet()) {
                 if (!Event.jsonFieldNames.contains(key)) {
-                    events.get(eventNum).getDetails().put(key, (String) jsonObject.get(key));
+                    String value = (String) jsonObject.get(key);
+                    if (value != null && !value.equals("")) {
+                        events.get(eventNum).getDetails().put(key, (String) jsonObject.get(key));
+                    }
                 }
             }
             eventNum++;
