@@ -46,8 +46,8 @@ public class EventController {
 
     @RequestMapping(value = "favorites", method = RequestMethod.GET)
     public List<EventDto> getFavorites(HttpServletResponse response) {
-        DBUser user = (DBUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        List<EventDto> events = eventService.getEventsByUser(user.getUsername());
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<EventDto> events = eventService.getEventsByUser(username);
         if (events == null) {
             try {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Cannot get events");
@@ -62,8 +62,8 @@ public class EventController {
     @RequestMapping(value = "favorites", method = RequestMethod.POST)
     public void addFavorites(HttpServletResponse response,
                                 @RequestParam("eventId") int eventId) {
-        DBUser user = (DBUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (!eventService.addEventForUser(user.getUsername(), eventId)) {
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (!eventService.addEventForUser(username, eventId)) {
             try {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Cannot add favorites.");
             } catch (IOException e) {
@@ -75,8 +75,8 @@ public class EventController {
     @RequestMapping(value = "favorites", method = RequestMethod.DELETE)
     public void removeFavorites(HttpServletResponse response,
                                 @RequestParam("eventId") int eventId) {
-        DBUser user = (DBUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (eventService.removeEventForUser(user.getUsername(), eventId)) {
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (eventService.removeEventForUser(username, eventId)) {
             try {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Cannot remove favorites.");
             } catch (IOException e) {

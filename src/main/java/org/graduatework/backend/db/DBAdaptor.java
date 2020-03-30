@@ -20,8 +20,8 @@ public class DBAdaptor {
 
     private static final String GET_EVENTS = "SELECT * FROM \"Events\";";
     private static final String GET_EVENTS_BY_USER = "SELECT * FROM \"Events\" WHERE " +
-            "COUNT(SELECT * FROM UserEvents WHERE \"UserEvents\".\"eventId\" = \"Events\".\"eventId\"" +
-            "AND (\"UserEvents\".\"username\" = ? OR \"UserEvents\".\"email\" = ?)) > 0;";
+            "(SELECT COUNT(*) FROM \"UserEvents\" WHERE \"UserEvents\".\"eventId\" = \"Events\".\"eventId\"" +
+            "AND (\"UserEvents\".\"userId\" = ?)) > 0;";
     //private static final String GET_TAGS_BY_EVENT = "SELECT * FROM Tags WHERE (SELECT COUNT(*) FROM EventTags WHERE eventId = ? AND EventTags.tagId = Tags.tagId);";
     private static final String INSERT_EVENT = "INSERT INTO \"Events\" (\"eventId\", \"title\", \"startTime\", \"endTime\", \"imgSrc\", \"description\", \"type\") "
             + "VALUES(?, ?, ?, ?, ?, ?, ?)";
@@ -327,10 +327,14 @@ public class DBAdaptor {
     public List<Event> getEventsByUser(String username) {
         Connection connection = null;
         try {
+            DBUser user = getUser(username);
+            if (user == null) {
+                return null;
+            }
+            int userId = user.getUserId();
             connection = DatabaseConfig.getDataSource().getConnection();
             PreparedStatement statement = connection.prepareStatement(GET_EVENTS_BY_USER);
-            statement.setString(1, username);
-            statement.setString(2, username);
+            statement.setInt(1, userId);
             ResultSet rs = statement.executeQuery();
             List<Event> events = new ArrayList<>();
             while (rs.next()) {
