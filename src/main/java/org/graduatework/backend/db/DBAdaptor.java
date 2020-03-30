@@ -56,7 +56,7 @@ public class DBAdaptor {
             ResultSet rs = statement.executeQuery();
             if (rs.next() && !rs.isClosed() && rs.getString("username") != null) {
                 return new DBUser(rs.getInt("userId"), rs.getString("username"), rs.getString("email"),
-                        rs.getString("password"), rs.getBoolean("isActivated"), rs.getLong("creationTime"));
+                        rs.getString("password"), rs.getBoolean("isActivated"), 0);
             } else {
                 throw new IllegalArgumentException("Such user doesn't exist.");
             }
@@ -83,7 +83,7 @@ public class DBAdaptor {
             statement.setString(1, user.getUsername());
             statement.setString(2, user.getEmail());
             ResultSet rs = statement.executeQuery();
-            if (!rs.isClosed() && rs.getString("username") != null) {
+            if (rs.next() && !rs.isClosed() && rs.getString("username") != null) {
                 throw new IllegalArgumentException("Such user already exists.");
             } else {
                 PreparedStatement insertStatement = connection.prepareStatement(INSERT_USER);
@@ -117,7 +117,7 @@ public class DBAdaptor {
             statement.setString(1, username);
             statement.setString(2, username);
             ResultSet rs = statement.executeQuery();
-            if (!rs.isClosed() && rs.getString("username") != null) {
+            if (rs.next() && !rs.isClosed() && rs.getString("username") != null) {
                 PreparedStatement updateStatement = connection.prepareStatement(ACTIVATE_USER);
                 updateStatement.setString(1, username);
                 updateStatement.setString(2, username);
@@ -378,7 +378,7 @@ public class DBAdaptor {
             statement.setInt(1, userId);
             statement.setInt(2, eventId);
             ResultSet rs = statement.executeQuery();
-            if (!rs.isClosed() && rs.getInt("userId") == userId) {
+            if (rs.next() && !rs.isClosed() && rs.getInt("userId") == userId) {
                 return false;
             } else {
                 PreparedStatement insertStatement = connection.prepareStatement(INSERT_USER_EVENT);
@@ -416,7 +416,7 @@ public class DBAdaptor {
             statement.setInt(1, userId);
             statement.setInt(2, eventId);
             ResultSet rs = statement.executeQuery();
-            if (!rs.isClosed() && rs.getInt("userId") == userId) {
+            if (rs.next() && !rs.isClosed() && rs.getInt("userId") == userId) {
                 return false;
             } else {
                 PreparedStatement deleteStatement = connection.prepareStatement(DELETE_USER_EVENT);
