@@ -26,6 +26,7 @@ public class DBUser implements UserDetails {
     }
 
     public DBUser(int userId, String username, String email, String password, boolean isActivated, long creationTime) {
+        this.userId = userId;
         this.username = username;
         this.email = email;
         this.password = password;

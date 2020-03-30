@@ -60,11 +60,7 @@ public class EventService extends BaseService {
         return events;
     }
 
-    public boolean addEventForUser(String username, int eventId) {
-        return dbAdaptor.addEventForUser(username, eventId);
-    }
-
-    public boolean removeEventForUser(String username, int eventId) {
-        return dbAdaptor.removeEventForUser(username, eventId);
+    public boolean updateEventForUser(String username, int eventId) {
+        return dbAdaptor.updateEventForUser(username, eventId);
     }
 }
