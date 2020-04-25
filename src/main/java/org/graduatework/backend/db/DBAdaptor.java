@@ -22,6 +22,9 @@ public class DBAdaptor {
     private static final String GET_EVENTS_BY_USER = "SELECT * FROM \"Events\" WHERE " +
             "(SELECT COUNT(*) FROM \"UserEvents\" WHERE \"UserEvents\".\"eventId\" = \"Events\".\"eventId\"" +
             "AND (\"UserEvents\".\"userId\" = ?)) > 0;";
+    private static final String GET_FAVORITES_BY_USER = "SELECT * FROM \"Events\" WHERE " +
+            "(SELECT COUNT(*) FROM \"UserEvents\" WHERE \"UserEvents\".\"eventId\" = \"Events\".\"eventId\"" +
+            "AND \"UserEvents\".\"userId\" = ? AND \"UserEvents\".\"isFavorite\") > 0;";
     //private static final String GET_TAGS_BY_EVENT = "SELECT * FROM Tags WHERE (SELECT COUNT(*) FROM EventTags WHERE eventId = ? AND EventTags.tagId = Tags.tagId);";
     private static final String INSERT_EVENT = "INSERT INTO \"Events\" (\"eventId\", \"title\", \"startTime\", \"endTime\", \"imgSrc\", \"description\", \"type\") "
             + "VALUES(?, ?, ?, ?, ?, ?, ?)";
@@ -38,8 +41,11 @@ public class DBAdaptor {
             "\"imgSrc\" = ?, \"description\" = ?, \"type\" = ? WHERE \"eventId\" = ?;";
 
     private static final String DELETE_USER_EVENT = "DELETE FROM \"UserEvents\" WHERE \"userId\" = ? AND \"eventId\" = ?;";
-    private static final String INSERT_USER_EVENT = "INSERT INTO \"UserEvents\" (\"userId\", \"eventId\") VALUES (?, ?);";
+    private static final String INSERT_USER_EVENT = "INSERT INTO \"UserEvents\" (\"userId\", \"eventId\", \"isFavorite\", \"mark\") " +
+            "VALUES (?, ?, ?, ?);";
     private static final String GET_USER_EVENT = "SELECT * FROM \"UserEvents\" WHERE \"userId\" = ? AND \"eventId\" = ?;";
+    private static final String UPDATE_FAVORITE = "UPDATE \"UserEvents\" SET \"isFavorite\" = ? " +
+            "WHERE \"userId\" = ? AND \"eventId\" = ?;";
 
     private static final Random rand = new Random(System.currentTimeMillis());
 
@@ -369,7 +375,52 @@ public class DBAdaptor {
         }
     }
 
-    public boolean updateEventForUser(String username, int eventId) throws IllegalArgumentException {
+    public List<Event> getFavoritesByUser(String username) {
+        Connection connection = null;
+        try {
+            DBUser user = getUser(username);
+            if (user == null) {
+                return null;
+            }
+            int userId = user.getUserId();
+            connection = DatabaseConfig.getDataSource().getConnection();
+            PreparedStatement statement = connection.prepareStatement(GET_FAVORITES_BY_USER);
+            statement.setInt(1, userId);
+            ResultSet rs = statement.executeQuery();
+            List<Event> events = new ArrayList<>();
+            while (rs.next()) {
+                int eventId = rs.getInt("eventId");
+                Event event = new Event(rs.getString("title"), rs.getString("startTime"), rs.getString("endTime"),
+                        rs.getString("imgSrc"), rs.getString("description"), rs.getString("type"));
+                event.setEventId(eventId);
+                PreparedStatement detailsStatement = connection.prepareStatement(GET_EVENT_DETAILS_BY_EVENT);
+                detailsStatement.setInt(1, eventId);
+                ResultSet details = detailsStatement.executeQuery();
+                while (details.next()) {
+                    event.getDetails().put(details.getString("propertyKey"), details.getString("propertyValue"));
+                }
+                events.add(event);
+
+//                PreparedStatement tagsStatement = connection.prepareStatement(GET_TAGS_BY_EVENT);
+//                tagsStatement.setInt(1, rs.getInt("eventId"));
+            }
+            return events;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.err.println(e.getMessage());
+            return null;
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public boolean updateFavoriteForUser(String username, int eventId) throws IllegalArgumentException {
         Connection connection = null;
         try {
             DBUser user = getUser(username);
@@ -383,15 +434,18 @@ public class DBAdaptor {
             statement.setInt(2, eventId);
             ResultSet rs = statement.executeQuery();
             if (rs.next() && !rs.isClosed() && rs.getInt("userId") == userId) {
-                PreparedStatement deleteStatement = connection.prepareStatement(DELETE_USER_EVENT);
-                deleteStatement.setInt(1, userId);
-                deleteStatement.setInt(2, eventId);
-                int deleteResult = deleteStatement.executeUpdate();
-                return deleteResult > 0;
+                PreparedStatement updateStatement = connection.prepareStatement(UPDATE_FAVORITE);
+                updateStatement.setInt(1, userId);
+                updateStatement.setInt(2, eventId);
+                updateStatement.setBoolean(3, !rs.getBoolean("isFavorite"));
+                int updateResult = updateStatement.executeUpdate();
+                return updateResult > 0;
             } else {
                 PreparedStatement insertStatement = connection.prepareStatement(INSERT_USER_EVENT);
                 insertStatement.setInt(1, userId);
                 insertStatement.setInt(2, eventId);
+                insertStatement.setBoolean(3, true);
+                insertStatement.setDouble(4, 0);
                 int insertResult = insertStatement.executeUpdate();
                 return insertResult > 0;
             }
