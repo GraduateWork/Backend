@@ -4,6 +4,7 @@ import org.graduatework.backend.db.DBUser;
 import org.graduatework.backend.dto.UserActivation;
 import org.graduatework.backend.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -50,6 +51,11 @@ public class AuthController {
                 exception.printStackTrace();
             }
         }
+    }
+
+    @RequestMapping(value = "principal", method = RequestMethod.GET)
+    public String getPrincipal() {
+        return (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
     @RequestMapping(value = "", method = RequestMethod.GET)
