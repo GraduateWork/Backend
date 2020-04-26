@@ -57,6 +57,10 @@ public class EventService extends BaseService {
     }
 
     public boolean updateFavoriteForUser(String username, int eventId) {
-        return dbAdaptor.updateFavoriteForUser(username, eventId);
+        return dbAdaptor.updateEventForUser(username, eventId, false, true);
+    }
+
+    public boolean setViewed(String username, int eventId) {
+        return dbAdaptor.updateEventForUser(username, eventId, true, false);
     }
 }

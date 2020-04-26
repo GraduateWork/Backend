@@ -44,7 +44,7 @@ public class DBAdaptor {
     private static final String INSERT_USER_EVENT = "INSERT INTO \"UserEvents\" (\"userId\", \"eventId\", \"isFavorite\", \"mark\") " +
             "VALUES (?, ?, ?, ?);";
     private static final String GET_USER_EVENT = "SELECT * FROM \"UserEvents\" WHERE \"userId\" = ? AND \"eventId\" = ?;";
-    private static final String UPDATE_FAVORITE = "UPDATE \"UserEvents\" SET \"isFavorite\" = ? " +
+    private static final String UPDATE_USER_EVENT = "UPDATE \"UserEvents\" SET \"isFavorite\" = ?, \"mark\" = ? " +
             "WHERE \"userId\" = ? AND \"eventId\" = ?;";
 
     private static final Random rand = new Random(System.currentTimeMillis());
@@ -420,7 +420,7 @@ public class DBAdaptor {
         }
     }
 
-    public boolean updateFavoriteForUser(String username, int eventId) throws IllegalArgumentException {
+    public boolean updateEventForUser(String username, int eventId, boolean setViewed, boolean updateFavorite) throws IllegalArgumentException {
         Connection connection = null;
         try {
             DBUser user = getUser(username);
@@ -434,10 +434,21 @@ public class DBAdaptor {
             statement.setInt(2, eventId);
             ResultSet rs = statement.executeQuery();
             if (rs.next() && !rs.isClosed() && rs.getInt("userId") == userId) {
-                PreparedStatement updateStatement = connection.prepareStatement(UPDATE_FAVORITE);
-                updateStatement.setInt(1, userId);
-                updateStatement.setInt(2, eventId);
-                updateStatement.setBoolean(3, !rs.getBoolean("isFavorite"));
+                PreparedStatement updateStatement = connection.prepareStatement(UPDATE_USER_EVENT);
+                updateStatement.setInt(3, userId);
+                updateStatement.setInt(4, eventId);
+                boolean isFavorite = rs.getBoolean("isFavorite");
+                double mark = rs.getDouble("mark");
+                if (setViewed && mark == 0)
+                    mark++;
+                if (updateFavorite) {
+                    if (isFavorite)
+                        mark--;
+                    else
+                        mark = 3;
+                }
+                updateStatement.setBoolean(1, !isFavorite);
+                updateStatement.setDouble(2, mark);
                 int updateResult = updateStatement.executeUpdate();
                 return updateResult > 0;
             } else {

@@ -69,4 +69,17 @@ public class EventController {
             }
         }
     }
+
+    @RequestMapping(value = "view", method = RequestMethod.POST)
+    public void setViewed(HttpServletResponse response,
+                          @RequestParam("eventId") int eventId) {
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (!eventService.setViewed(username, eventId)) {
+            try {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Cannot set this event viewed.");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }
