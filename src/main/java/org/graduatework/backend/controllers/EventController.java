@@ -1,7 +1,5 @@
 package org.graduatework.backend.controllers;
 
-import org.graduatework.backend.db.DBUser;
-import org.graduatework.backend.db.Event;
 import org.graduatework.backend.dto.EventDto;
 import org.graduatework.backend.services.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +45,7 @@ public class EventController {
     @RequestMapping(value = "favorites", method = RequestMethod.GET)
     public List<EventDto> getFavorites(HttpServletResponse response) {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        List<EventDto> events = eventService.getEventsByUser(username);
+        List<EventDto> events = eventService.getFavoritesByUser(username);
         if (events == null) {
             try {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Cannot get events");
@@ -63,9 +61,22 @@ public class EventController {
     public void updateFavorites(HttpServletResponse response,
                                 @RequestParam("eventId") int eventId) {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (!eventService.updateEventForUser(username, eventId)) {
+        if (!eventService.updateFavoriteForUser(username, eventId)) {
             try {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Cannot update favorites status.");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @RequestMapping(value = "view", method = RequestMethod.POST)
+    public void setViewed(HttpServletResponse response,
+                          @RequestParam("eventId") int eventId) {
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (!eventService.setViewed(username, eventId)) {
+            try {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Cannot set this event viewed.");
             } catch (IOException e) {
                 e.printStackTrace();
             }

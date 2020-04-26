@@ -39,16 +39,19 @@ public class DBUser implements UserDetails {
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonExpired() {
         return false;
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonLocked() {
         return false;
     }
 
     @Override
+    @JsonIgnore
     public boolean isCredentialsNonExpired() {
         return false;
     }
@@ -71,10 +74,12 @@ public class DBUser implements UserDetails {
     }
 
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
     }
 
+    @JsonIgnore
     public String getPassword() {
         return password;
     }

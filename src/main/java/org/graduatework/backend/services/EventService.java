@@ -19,10 +19,6 @@ public class EventService extends BaseService {
         super(config);
     }
 
-    public void addEvent(Event event) {
-
-    }
-
     public List<EventDto> getEvents(String username) {
         List<Event> dbEvents = dbAdaptor.getEvents();
         List<EventDto> events = new ArrayList<>();
@@ -33,7 +29,7 @@ public class EventService extends BaseService {
             events.add(event);
         }
         if (username != null) {
-            List<Event> eventsByUser = dbAdaptor.getEventsByUser(username);
+            List<Event> eventsByUser = dbAdaptor.getFavoritesByUser(username);
             Map<Integer, EventDto> eventMap = new HashMap<>();
             for (int i = 0; i < events.size(); i++) {
                 eventMap.put(events.get(i).getEventId(), events.get(i));
@@ -48,8 +44,8 @@ public class EventService extends BaseService {
         return events;
     }
 
-    public List<EventDto> getEventsByUser(String username) {
-        List<Event> dbEvents = dbAdaptor.getEventsByUser(username);
+    public List<EventDto> getFavoritesByUser(String username) {
+        List<Event> dbEvents = dbAdaptor.getFavoritesByUser(username);
         List<EventDto> events = new ArrayList<>();
         for (int i = 0; i < dbEvents.size(); i++) {
             Event dbEvent = dbEvents.get(i);
@@ -60,7 +56,11 @@ public class EventService extends BaseService {
         return events;
     }
 
-    public boolean updateEventForUser(String username, int eventId) {
-        return dbAdaptor.updateEventForUser(username, eventId);
+    public boolean updateFavoriteForUser(String username, int eventId) {
+        return dbAdaptor.updateEventForUser(username, eventId, false, true);
+    }
+
+    public boolean setViewed(String username, int eventId) {
+        return dbAdaptor.updateEventForUser(username, eventId, true, false);
     }
 }

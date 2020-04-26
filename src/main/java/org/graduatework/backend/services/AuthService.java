@@ -53,4 +53,8 @@ public class AuthService extends BaseService {
             }
         }
     }
+
+    public DBUser getUser(String username) {
+        return dbAdaptor.getUser(username);
+    }
 }

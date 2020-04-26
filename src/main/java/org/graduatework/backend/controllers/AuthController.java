@@ -53,9 +53,10 @@ public class AuthController {
         }
     }
 
-    @RequestMapping(value = "principal", method = RequestMethod.GET)
-    public String getPrincipal() {
-        return (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    @RequestMapping(value = "user", method = RequestMethod.GET)
+    public DBUser getPrincipal() {
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return authService.getUser(username);
     }
 
     @RequestMapping(value = "", method = RequestMethod.GET)
