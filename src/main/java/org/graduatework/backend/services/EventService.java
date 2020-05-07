@@ -2,6 +2,7 @@ package org.graduatework.backend.services;
 
 import org.graduatework.backend.config.Configuration;
 import org.graduatework.backend.db.Event;
+import org.graduatework.backend.db.UserEvent;
 import org.graduatework.backend.dto.EventDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,11 @@ public class EventService extends BaseService {
     @Autowired
     public EventService(Configuration config) {
         super(config);
+    }
+
+    private List<EventDto> sortByPreference(List<EventDto> events, String username) {
+        List<UserEvent> userEvents = dbAdaptor.getUserEvents(username);
+        return events;
     }
 
     public List<EventDto> getEvents(String username) {
@@ -40,6 +46,7 @@ public class EventService extends BaseService {
                     event.setFavorite(true);
                 }
             }
+            events = sortByPreference(events, username);
         }
         return events;
     }

@@ -44,6 +44,7 @@ public class DBAdaptor {
     private static final String INSERT_USER_EVENT = "INSERT INTO \"UserEvents\" (\"userId\", \"eventId\", \"isFavorite\", \"mark\") " +
             "VALUES (?, ?, ?, ?);";
     private static final String GET_USER_EVENT = "SELECT * FROM \"UserEvents\" WHERE \"userId\" = ? AND \"eventId\" = ?;";
+    private static final String GET_USER_EVENTS = "SELECT * FROM \"UserEvents\" WHERE \"userId\" = ?;";
     private static final String UPDATE_USER_EVENT = "UPDATE \"UserEvents\" SET \"isFavorite\" = ?, \"mark\" = ? " +
             "WHERE \"userId\" = ? AND \"eventId\" = ?;";
 
@@ -464,6 +465,41 @@ public class DBAdaptor {
             e.printStackTrace();
             System.err.println(e.getMessage());
             return false;
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public List<UserEvent> getUserEvents(String username) {
+        Connection connection = null;
+        try {
+            DBUser user = getUser(username);
+            if (user == null) {
+                return null;
+            }
+            int userId = user.getUserId();
+            connection = DatabaseConfig.getDataSource().getConnection();
+            PreparedStatement statement = connection.prepareStatement(GET_USER_EVENTS);
+            statement.setInt(1, userId);
+            ResultSet rs = statement.executeQuery();
+            List<UserEvent> userEvents = new ArrayList<>();
+            while (rs.next()) {
+                int eventId = rs.getInt("eventId");
+                UserEvent userEvent = new UserEvent(rs.getInt("userId"), rs.getInt("eventId"), rs.getBoolean("isFavorite"),
+                        rs.getDouble("mark"));
+                userEvents.add(userEvent);
+            }
+            return userEvents;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.err.println(e.getMessage());
+            return null;
         } finally {
             if (connection != null) {
                 try {
