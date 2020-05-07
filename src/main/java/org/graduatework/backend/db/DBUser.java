@@ -79,7 +79,6 @@ public class DBUser implements UserDetails {
         return null;
     }
 
-    @JsonIgnore
     public String getPassword() {
         return password;
     }
