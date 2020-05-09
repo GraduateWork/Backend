@@ -1,9 +1,10 @@
 package org.graduatework.backend.services;
 
 import org.graduatework.backend.config.Configuration;
+import org.graduatework.backend.db.DBAdaptor;
 import org.graduatework.backend.db.Event;
-import org.graduatework.backend.db.UserEvent;
 import org.graduatework.backend.dto.EventDto;
+import org.graduatework.backend.recommendation.RecommendationManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,18 +12,24 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class EventService extends BaseService {
+    private final String recManagerPath = "org.graduatework.backend.recommendation.";
+
+    private RecommendationManager recommendationManager = null;
 
     @Autowired
     public EventService(Configuration config) {
         super(config);
-    }
-
-    private List<EventDto> sortByPreference(List<EventDto> events, String username) {
-        List<UserEvent> userEvents = dbAdaptor.getUserEvents(username);
-        return events;
+        String recManagerClassName = config.getRecommendationManager();
+        try {
+            recommendationManager = (RecommendationManager) Class.forName(recManagerPath + recManagerClassName)
+                    .getConstructor(DBAdaptor.class).newInstance(dbAdaptor);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
     }
 
     public List<EventDto> getEvents(String username) {
@@ -46,9 +53,11 @@ public class EventService extends BaseService {
                     event.setFavorite(true);
                 }
             }
-            events = sortByPreference(events, username);
+            if (recommendationManager != null) {
+                events = recommendationManager.sortByPreference(events, username);
+            }
         }
-        return events;
+        return events.stream().filter(e -> !e.isFavorite()).collect(Collectors.toList());
     }
 
     public List<EventDto> getFavoritesByUser(String username) {

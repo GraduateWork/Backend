@@ -6,14 +6,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class DBAdaptor {
 
     private static final String GET_USER = "SELECT * FROM \"Users\" WHERE username = ? OR email = ?;";
+    private static final String GET_USERS = "SELECT * FROM \"Users\";";
     //private static final String UPDATE_USER = "UPDATE Files SET text = ? WHERE name = ?;";
     private static final String INSERT_USER = "INSERT INTO \"Users\" (username, email, password, \"isActivated\") VALUES (?, ?, ?, ?)";
     private static final String ACTIVATE_USER = "UPDATE \"Users\" SET \"isActivated\" = true WHERE username = ? OR email = ?;";
@@ -71,6 +69,33 @@ public class DBAdaptor {
             e.printStackTrace();
             System.err.println(e.getMessage());
             return null;
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public List<DBUser> getUsers() {
+        Connection connection = null;
+        try {
+            connection = DatabaseConfig.getDataSource().getConnection();
+            PreparedStatement statement = connection.prepareStatement(GET_USERS);
+            ResultSet rs = statement.executeQuery();
+            List<DBUser> users = new ArrayList<>();
+            while (rs.next()) {
+                users.add(new DBUser(rs.getInt("userId"), rs.getString("username"), rs.getString("email"),
+                        rs.getString("password"), rs.getBoolean("isActivated"), 0));
+            }
+            return users;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.err.println(e.getMessage());
+            return Collections.emptyList();
         } finally {
             if (connection != null) {
                 try {

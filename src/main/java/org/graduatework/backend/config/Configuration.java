@@ -13,6 +13,9 @@ public class Configuration {
     @Value("${datasource.url}")
     private String dataSourceUrl;
 
+    @Value("${recommendationManager}")
+    private String recommendationManager;
+
     public String getJdbcUrl() {
         return jdbcUrl;
     }
@@ -27,5 +30,13 @@ public class Configuration {
 
     public void setDataSourceUrl(String dataSourceUrl) {
         this.dataSourceUrl = dataSourceUrl;
+    }
+
+    public String getRecommendationManager() {
+        return recommendationManager;
+    }
+
+    public void setRecommendationManager(String recommendationManager) {
+        this.recommendationManager = recommendationManager;
     }
 }
