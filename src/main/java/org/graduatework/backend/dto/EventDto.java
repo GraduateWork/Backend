@@ -13,10 +13,11 @@ public class EventDto {
     private String imgSrc;
     private String description;
     private String type;
+    private String source;
     private boolean isFavorite;
     private Map<String, String> details = new HashMap<>();
 
-    public static final Set<String> jsonFieldNames = new HashSet<>(Arrays.asList("title", "startTime", "endTime", "imgSrc", "description", "type"));
+    public static final Set<String> jsonFieldNames = new HashSet<>(Arrays.asList("title", "startTime", "endTime", "imgSrc", "description", "type", "source"));
 
     public EventDto() {
         eventId = null;
@@ -26,10 +27,11 @@ public class EventDto {
         imgSrc = "";
         description = "";
         type = "";
+        source = "";
         isFavorite = false;
     }
 
-    public EventDto(int eventId, String title, String startTime, String endTime, String imgSrc, String description, String type, boolean isFavorite, Map<String, String> details) {
+    public EventDto(int eventId, String title, String startTime, String endTime, String imgSrc, String description, String type, String source, boolean isFavorite, Map<String, String> details) {
         this.eventId = eventId;
         this.title = title;
         this.startTime = startTime;
@@ -37,6 +39,7 @@ public class EventDto {
         this.imgSrc = imgSrc;
         this.description = description;
         this.type = type;
+        this.source = source;
         this.isFavorite = isFavorite;
         this.details = details;
     }
@@ -107,5 +110,13 @@ public class EventDto {
 
     public void setFavorite(boolean favorite) {
         isFavorite = favorite;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
     }
 }

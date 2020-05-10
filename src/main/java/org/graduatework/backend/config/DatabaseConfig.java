@@ -25,6 +25,9 @@ public class DatabaseConfig {
         basicDataSource.setJdbcUrl(dbUrl);
         basicDataSource.setUsername(username);
         basicDataSource.setPassword(password);
+        basicDataSource.setMaxLifetime(180000);
+        basicDataSource.setIdleTimeout(60000);
+        basicDataSource.setMaximumPoolSize(30);
         dataSource = basicDataSource;
 
         return basicDataSource;
