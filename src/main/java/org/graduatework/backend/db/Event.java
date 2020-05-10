@@ -13,9 +13,10 @@ public class Event {
     private String imgSrc;
     private String description;
     private String type;
+    private String source;
     private Map<String, String> details = new HashMap<>();
 
-    public static final Set<String> jsonFieldNames = new HashSet<>(Arrays.asList("title", "startTime", "endTime", "imgSrc", "description", "type"));
+    public static final Set<String> jsonFieldNames = new HashSet<>(Arrays.asList("title", "startTime", "endTime", "imgSrc", "description", "type", "source"));
 
     public Event() {
         eventId = null;
@@ -25,15 +26,17 @@ public class Event {
         imgSrc = "";
         description = "";
         type = "";
+        source = "";
     }
 
-    public Event(String title, String startTime, String endTime, String imgSrc, String description, String type) {
+    public Event(String title, String startTime, String endTime, String imgSrc, String description, String type, String source) {
         this.title = title;
         this.startTime = startTime;
         this.endTime = endTime;
         this.imgSrc = imgSrc;
         this.description = description;
         this.type = type;
+        this.source = source;
     }
 
     public String getTitle() {
@@ -94,5 +97,13 @@ public class Event {
 
     public void setEventId(Integer eventId) {
         this.eventId = eventId;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
     }
 }

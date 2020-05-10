@@ -6,14 +6,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class DBAdaptor {
 
     private static final String GET_USER = "SELECT * FROM \"Users\" WHERE username = ? OR email = ?;";
+    private static final String GET_USERS = "SELECT * FROM \"Users\";";
     //private static final String UPDATE_USER = "UPDATE Files SET text = ? WHERE name = ?;";
     private static final String INSERT_USER = "INSERT INTO \"Users\" (username, email, password, \"isActivated\") VALUES (?, ?, ?, ?)";
     private static final String ACTIVATE_USER = "UPDATE \"Users\" SET \"isActivated\" = true WHERE username = ? OR email = ?;";
@@ -26,8 +24,8 @@ public class DBAdaptor {
             "(SELECT COUNT(*) FROM \"UserEvents\" WHERE \"UserEvents\".\"eventId\" = \"Events\".\"eventId\"" +
             "AND \"UserEvents\".\"userId\" = ? AND \"UserEvents\".\"isFavorite\") > 0;";
     //private static final String GET_TAGS_BY_EVENT = "SELECT * FROM Tags WHERE (SELECT COUNT(*) FROM EventTags WHERE eventId = ? AND EventTags.tagId = Tags.tagId);";
-    private static final String INSERT_EVENT = "INSERT INTO \"Events\" (\"eventId\", \"title\", \"startTime\", \"endTime\", \"imgSrc\", \"description\", \"type\") "
-            + "VALUES(?, ?, ?, ?, ?, ?, ?)";
+    private static final String INSERT_EVENT = "INSERT INTO \"Events\" (\"eventId\", \"title\", \"startTime\", \"endTime\", \"imgSrc\", \"description\", \"type\", \"source\") "
+            + "VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
     private static final String CLEAR_EVENTS = "TRUNCATE \"Events\" CASCADE;";
     private static final String CLEAR_EVENT_DETAILS = "TRUNCATE \"EventDetails\";";
     private static final String INSERT_EVENT_DETAILS = "INSERT INTO \"EventDetails\" (\"propertyKey\", \"propertyValue\", \"eventId\") "
@@ -38,7 +36,7 @@ public class DBAdaptor {
     private static final String DELETE_USER_EVENTS = "DELETE FROM \"UserEvents\" WHERE \"eventId\" = ?;";
 
     private static final String UPDATE_EVENT = "UPDATE \"Events\" SET \"title\" = ?, \"startTime\" = ?, \"endTime\" = ?, " +
-            "\"imgSrc\" = ?, \"description\" = ?, \"type\" = ? WHERE \"eventId\" = ?;";
+            "\"imgSrc\" = ?, \"description\" = ?, \"type\" = ?, \"source\" = ? WHERE \"eventId\" = ?;";
 
     private static final String DELETE_USER_EVENT = "DELETE FROM \"UserEvents\" WHERE \"userId\" = ? AND \"eventId\" = ?;";
     private static final String INSERT_USER_EVENT = "INSERT INTO \"UserEvents\" (\"userId\", \"eventId\", \"isFavorite\", \"mark\") " +
@@ -71,6 +69,33 @@ public class DBAdaptor {
             e.printStackTrace();
             System.err.println(e.getMessage());
             return null;
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public List<DBUser> getUsers() {
+        Connection connection = null;
+        try {
+            connection = DatabaseConfig.getDataSource().getConnection();
+            PreparedStatement statement = connection.prepareStatement(GET_USERS);
+            ResultSet rs = statement.executeQuery();
+            List<DBUser> users = new ArrayList<>();
+            while (rs.next()) {
+                users.add(new DBUser(rs.getInt("userId"), rs.getString("username"), rs.getString("email"),
+                        rs.getString("password"), rs.getBoolean("isActivated"), 0));
+            }
+            return users;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.err.println(e.getMessage());
+            return Collections.emptyList();
         } finally {
             if (connection != null) {
                 try {
@@ -232,6 +257,7 @@ public class DBAdaptor {
                     eventStatement.setString(5, event.getImgSrc());
                     eventStatement.setString(6, event.getDescription());
                     eventStatement.setString(7, event.getType());
+                    eventStatement.setString(8, event.getSource());
 
                     eventStatement.addBatch();
                     eventCount++;
@@ -246,7 +272,8 @@ public class DBAdaptor {
                     updateEventStatement.setString(4, event.getImgSrc());
                     updateEventStatement.setString(5, event.getDescription());
                     updateEventStatement.setString(6, event.getType());
-                    updateEventStatement.setInt(7, event.getEventId());
+                    updateEventStatement.setString(7, event.getSource());
+                    updateEventStatement.setInt(8, event.getEventId());
 
                     updateEventStatement.addBatch();
                     updateEventCount++;
@@ -301,7 +328,7 @@ public class DBAdaptor {
             while (rs.next()) {
                 int eventId = rs.getInt("eventId");
                 Event event = new Event(rs.getString("title"), rs.getString("startTime"), rs.getString("endTime"),
-                        rs.getString("imgSrc"), rs.getString("description"), rs.getString("type"));
+                        rs.getString("imgSrc"), rs.getString("description"), rs.getString("type"), rs.getString("source"));
                 event.setEventId(eventId);
                 PreparedStatement detailsStatement = connection.prepareStatement(GET_EVENT_DETAILS_BY_EVENT);
                 detailsStatement.setInt(1, eventId);
@@ -347,7 +374,7 @@ public class DBAdaptor {
             while (rs.next()) {
                 int eventId = rs.getInt("eventId");
                 Event event = new Event(rs.getString("title"), rs.getString("startTime"), rs.getString("endTime"),
-                        rs.getString("imgSrc"), rs.getString("description"), rs.getString("type"));
+                        rs.getString("imgSrc"), rs.getString("description"), rs.getString("type"), rs.getString("source"));
                 event.setEventId(eventId);
                 PreparedStatement detailsStatement = connection.prepareStatement(GET_EVENT_DETAILS_BY_EVENT);
                 detailsStatement.setInt(1, eventId);
@@ -392,7 +419,7 @@ public class DBAdaptor {
             while (rs.next()) {
                 int eventId = rs.getInt("eventId");
                 Event event = new Event(rs.getString("title"), rs.getString("startTime"), rs.getString("endTime"),
-                        rs.getString("imgSrc"), rs.getString("description"), rs.getString("type"));
+                        rs.getString("imgSrc"), rs.getString("description"), rs.getString("type"), rs.getString("source"));
                 event.setEventId(eventId);
                 PreparedStatement detailsStatement = connection.prepareStatement(GET_EVENT_DETAILS_BY_EVENT);
                 detailsStatement.setInt(1, eventId);
