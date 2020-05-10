@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
-public class UserBasedRecommendationManager {
+public class UserBasedRecommendationManager implements RecommendationManager{
 
     private DBAdaptor dbAdaptor;
 
@@ -19,6 +19,7 @@ public class UserBasedRecommendationManager {
     }
 
     @SuppressWarnings("OptionalGetWithoutIsPresent")
+    @Override
     public List<EventDto> sortByPreference(List<EventDto> events, String username) {
         List<UserEvent> curUserEvents = dbAdaptor.getUserEvents(username);
         List<DBUser> users = dbAdaptor.getUsers();
