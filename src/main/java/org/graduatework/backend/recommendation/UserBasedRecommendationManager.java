@@ -1,31 +1,32 @@
 package org.graduatework.backend.recommendation;
 
-import org.graduatework.backend.db.DBAdaptor;
+import org.graduatework.backend.db.DBAdaptorInfo;
 import org.graduatework.backend.db.DBUser;
 import org.graduatework.backend.db.UserEvent;
 import org.graduatework.backend.dto.EventDto;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.IntStream;
 
-public class UserBasedRecommendationManager implements RecommendationManager{
+public class UserBasedRecommendationManager implements RecommendationManager {
 
-    private DBAdaptor dbAdaptor;
+    private DBAdaptorInfo dbAdaptor;
 
-    public UserBasedRecommendationManager(DBAdaptor dbAdaptor) {
+    public UserBasedRecommendationManager(DBAdaptorInfo dbAdaptor) {
         this.dbAdaptor = dbAdaptor;
     }
 
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
     @Override
     public List<EventDto> sortByPreference(List<EventDto> events, String username) {
         List<UserEvent> curUserEvents = dbAdaptor.getUserEvents(username);
         List<DBUser> users = dbAdaptor.getUsers();
-        int curUserIndex = IntStream.range(0, users.size())
+        OptionalInt optional = IntStream.range(0, users.size())
                 .filter(i -> username.equals(users.get(i).getUsername()))
-                .findFirst().getAsInt();
+                .findFirst();
+        if (optional.isEmpty()) {
+            return events;
+        }
+        int curUserIndex = optional.getAsInt();
         Map<Integer, Integer> eventIndexes = new HashMap<>();
         for (int i = 0; i < events.size(); i++) {
             eventIndexes.put(events.get(i).getEventId(), i);
