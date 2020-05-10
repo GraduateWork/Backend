@@ -279,7 +279,7 @@ public class DBAdaptor {
                     updateEventCount++;
                     // execute every 100 rows or less
                     if (updateEventCount % 100 == 0 || i == events.size()) {
-                        eventStatement.executeBatch();
+                        updateEventStatement.executeBatch();
                     }
                 }
             }
