@@ -8,7 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
-public class DBAdaptor {
+public class DBAdaptor implements DBAdaptorInfo {
 
     private static final String GET_USER = "SELECT * FROM \"Users\" WHERE username = ? OR email = ?;";
     private static final String GET_USERS = "SELECT * FROM \"Users\";";

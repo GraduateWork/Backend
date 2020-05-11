@@ -1,7 +1,7 @@
 package org.graduatework.backend.services;
 
 import org.graduatework.backend.config.Configuration;
-import org.graduatework.backend.db.DBAdaptor;
+import org.graduatework.backend.db.DBAdaptorInfo;
 import org.graduatework.backend.db.Event;
 import org.graduatework.backend.dto.EventDto;
 import org.graduatework.backend.recommendation.RecommendationManager;
@@ -26,7 +26,18 @@ public class EventService extends BaseService {
         String recManagerClassName = config.getRecommendationManager();
         try {
             recommendationManager = (RecommendationManager) Class.forName(recManagerPath + recManagerClassName)
-                    .getConstructor(DBAdaptor.class).newInstance(dbAdaptor);
+                    .getConstructor(DBAdaptorInfo.class).newInstance(dbAdaptor);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+    }
+
+    public EventService(Configuration config, DBAdaptorInfo dbAdaptor) {
+        super(config, dbAdaptor);
+        String recManagerClassName = config.getRecommendationManager();
+        try {
+            recommendationManager = (RecommendationManager) Class.forName(recManagerPath + recManagerClassName)
+                    .getConstructor(DBAdaptorInfo.class).newInstance(dbAdaptor);
         } catch (Throwable e) {
             e.printStackTrace();
         }
