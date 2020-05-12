@@ -24,13 +24,14 @@ public class EventController {
     }
 
     @RequestMapping(value = "events", method = RequestMethod.GET)
-    public List<EventDto> getEvents(HttpServletResponse response) {
+    public List<EventDto> getEvents(HttpServletResponse response,
+                                    @RequestParam(value = "count", required = false) Integer count) {
         String username = null;
         try {
             username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         } catch (Throwable e) {
         }
-        List<EventDto> events = eventService.getEvents(username == null || username.equals("anonymousUser") ? null : username);
+        List<EventDto> events = eventService.getEvents(username == null || username.equals("anonymousUser") ? null : username, count);
         if (events == null) {
             try {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Cannot get events");
@@ -81,5 +82,36 @@ public class EventController {
                 e.printStackTrace();
             }
         }
+    }
+
+    @RequestMapping(value = "search", method = RequestMethod.GET)
+    public List<EventDto> getSearched(HttpServletResponse response,
+                                      @RequestParam("request") String requestString) {
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<EventDto> events = eventService.getSearched(username, requestString);
+        if (events == null) {
+            try {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Cannot get searched events");
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+        return events;
+    }
+
+    @RequestMapping(value = "top", method = RequestMethod.GET)
+    public List<EventDto> getTopEvents(HttpServletResponse response,
+                                       @RequestParam(value = "count", required = false) Integer count) {
+        List<EventDto> events = eventService.getTopEvents(count);
+        if (events == null) {
+            try {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Cannot get top events");
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+        return events;
     }
 }

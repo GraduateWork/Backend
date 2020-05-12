@@ -264,6 +264,7 @@ public class DBAdaptor implements DBAdaptorInfo {
                     // execute every 100 rows or less
                     if (eventCount % 100 == 0 || i == events.size()) {
                         eventStatement.executeBatch();
+                        updateEventStatement.executeBatch();
                     }
                 } else {
                     updateEventStatement.setString(1, event.getTitle());
@@ -279,6 +280,7 @@ public class DBAdaptor implements DBAdaptorInfo {
                     updateEventCount++;
                     // execute every 100 rows or less
                     if (updateEventCount % 100 == 0 || i == events.size()) {
+                        eventStatement.executeBatch();
                         updateEventStatement.executeBatch();
                     }
                 }
