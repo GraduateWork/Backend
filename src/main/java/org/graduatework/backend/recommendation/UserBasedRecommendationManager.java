@@ -94,7 +94,7 @@ public class UserBasedRecommendationManager implements RecommendationManager {
         events.sort((a, b) -> {
             double markA = marks[curUserIndex][eventIndexes.get(a.getEventId())];
             double markB = marks[curUserIndex][eventIndexes.get(b.getEventId())];
-            return Double.compare(markA, markB);
+            return Double.compare(markB, markA);
         });
         return events;
     }
