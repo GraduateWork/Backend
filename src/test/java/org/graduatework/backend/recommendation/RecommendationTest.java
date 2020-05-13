@@ -29,7 +29,7 @@ public class RecommendationTest {
         // TODO: Fill data.
         setup("UserBasedRecommendationManager", dbAdaptor);
         String username = "";
-        List<EventDto> events = eventService.getEvents(username);
+        List<EventDto> events = eventService.getEvents(username, null);
         Assertions.assertNotNull(events);
     }
 }
