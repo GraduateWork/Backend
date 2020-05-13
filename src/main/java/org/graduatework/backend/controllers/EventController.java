@@ -107,8 +107,12 @@ public class EventController {
     @RequestMapping(value = "search", method = RequestMethod.GET)
     public List<EventDto> getSearched(HttpServletResponse response,
                                       @RequestParam("request") String requestString) {
-        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        List<EventDto> events = eventService.getSearched(username, requestString);
+        String username = null;
+        try {
+            username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        } catch (Throwable e) {
+        }
+        List<EventDto> events = eventService.getSearched(username == null || username.equals("anonymousUser") ? null : username, requestString);
         if (events == null) {
             try {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Cannot get searched events");
