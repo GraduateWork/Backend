@@ -43,6 +43,26 @@ public class EventController {
         return events;
     }
 
+    @RequestMapping(value = "event", method = RequestMethod.GET)
+    public EventDto getEvent(HttpServletResponse response,
+                                    @RequestParam("eventId") int eventId) {
+        String username = null;
+        try {
+            username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        } catch (Throwable e) {
+        }
+        EventDto event = eventService.getEvent(username == null || username.equals("anonymousUser") ? null : username, eventId);
+        if (event == null) {
+            try {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Cannot get event");
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+        return event;
+    }
+
     @RequestMapping(value = "favorites", method = RequestMethod.GET)
     public List<EventDto> getFavorites(HttpServletResponse response) {
         String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

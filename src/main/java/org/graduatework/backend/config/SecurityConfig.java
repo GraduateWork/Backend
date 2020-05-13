@@ -33,7 +33,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(new SimpleAuthenticationFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new SimpleCorsFilter(), ChannelProcessingFilter.class)
                 .authorizeRequests()
-                .antMatchers("/signUp", "/activation", "/events", "/", "/search", "/top")
+                .antMatchers("/signUp", "/activation", "/events", "/", "/search", "/top", "/event")
                 .permitAll()
                 .anyRequest().authenticated()
                 .and()

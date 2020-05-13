@@ -12,6 +12,7 @@ public interface DBAdaptorInfo {
     boolean deleteEvents(Collection<Event> events);
     boolean insertEvents(List<Event> events);
     List<Event> getEvents();
+    Event getEvent(int eventId);
     List<Event> getEventsByUser(String username);
     List<Event> getFavoritesByUser(String username);
     boolean updateEventForUser(String username, int eventId, boolean setViewed, boolean updateFavorite) throws IllegalArgumentException;

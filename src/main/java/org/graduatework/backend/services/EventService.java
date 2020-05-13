@@ -77,6 +77,22 @@ public class EventService extends BaseService {
         return filteredEvents;
     }
 
+    public EventDto getEvent(String username, int eventId) {
+        Event dbEvent = dbAdaptor.getEvent(eventId);
+        EventDto event = new EventDto(dbEvent.getEventId(), dbEvent.getTitle(), dbEvent.getStartTime(), dbEvent.getEndTime(),
+                dbEvent.getImgSrc(), dbEvent.getDescription(), dbEvent.getType(), dbEvent.getSource(), false, dbEvent.getDetails());
+        if (username != null) {
+            List<Event> eventsByUser = dbAdaptor.getFavoritesByUser(username);
+            for (int i = 0; i < eventsByUser.size(); i++) {
+                if (eventsByUser.get(i).getEventId() == eventId) {
+                    event.setFavorite(true);
+                    break;
+                }
+            }
+        }
+        return event;
+    }
+
     public List<EventDto> getFavoritesByUser(String username) {
         List<Event> dbEvents = dbAdaptor.getFavoritesByUser(username);
         List<EventDto> events = new ArrayList<>();
@@ -99,8 +115,21 @@ public class EventService extends BaseService {
             String description = dbEvent.getDescription().toLowerCase();
             if (title.contains(requestString) || description.contains(requestString)) {
                 EventDto event = new EventDto(dbEvent.getEventId(), dbEvent.getTitle(), dbEvent.getStartTime(), dbEvent.getEndTime(),
-                        dbEvent.getImgSrc(), dbEvent.getDescription(), dbEvent.getType(), dbEvent.getSource(), true, dbEvent.getDetails());
+                        dbEvent.getImgSrc(), dbEvent.getDescription(), dbEvent.getType(), dbEvent.getSource(), false, dbEvent.getDetails());
                 events.add(event);
+            }
+        }
+        if (username != null) {
+            List<Event> eventsByUser = dbAdaptor.getFavoritesByUser(username);
+            Map<Integer, EventDto> eventMap = new HashMap<>();
+            for (int i = 0; i < events.size(); i++) {
+                eventMap.put(events.get(i).getEventId(), events.get(i));
+            }
+            for (int i = 0; i < eventsByUser.size(); i++) {
+                EventDto event = eventMap.get(eventsByUser.get(i).getEventId());
+                if (event != null) {
+                    event.setFavorite(true);
+                }
             }
         }
         // TODO: add sort by preference.
@@ -113,7 +142,7 @@ public class EventService extends BaseService {
         for (int i = 0; i < dbEvents.size(); i++) {
             Event dbEvent = dbEvents.get(i);
             EventDto event = new EventDto(dbEvent.getEventId(), dbEvent.getTitle(), dbEvent.getStartTime(), dbEvent.getEndTime(),
-                    dbEvent.getImgSrc(), dbEvent.getDescription(), dbEvent.getType(), dbEvent.getSource(), true, dbEvent.getDetails());
+                    dbEvent.getImgSrc(), dbEvent.getDescription(), dbEvent.getType(), dbEvent.getSource(), false, dbEvent.getDetails());
             events.add(event);
         }
 
