@@ -54,6 +54,16 @@ public class TestDBAdaptor implements DBAdaptorInfo {
     }
 
     @Override
+    public Event getEvent(int eventId) {
+        for (Event event : events) {
+            if (event.getEventId() == eventId) {
+                return event;
+            }
+        }
+        return null;
+    }
+
+    @Override
     public List<Event> getEventsByUser(String username) {
         return null;
     }
