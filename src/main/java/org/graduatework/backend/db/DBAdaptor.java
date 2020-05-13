@@ -525,8 +525,13 @@ public class DBAdaptor implements DBAdaptorInfo {
                 PreparedStatement insertStatement = connection.prepareStatement(INSERT_USER_EVENT);
                 insertStatement.setInt(1, userId);
                 insertStatement.setInt(2, eventId);
-                insertStatement.setBoolean(3, true);
-                insertStatement.setDouble(4, 0);
+                insertStatement.setBoolean(3, updateFavorite);
+                int mark = 0;
+                if (setViewed)
+                    mark = 1;
+                if (updateFavorite)
+                    mark = 3;
+                insertStatement.setDouble(4, mark);
                 int insertResult = insertStatement.executeUpdate();
                 return insertResult > 0;
             }
