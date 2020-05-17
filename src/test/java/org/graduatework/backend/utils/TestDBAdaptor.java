@@ -1,5 +1,6 @@
 package org.graduatework.backend.utils;
 
+import org.apache.catalina.User;
 import org.graduatework.backend.db.*;
 
 import java.util.*;
@@ -10,6 +11,7 @@ public class TestDBAdaptor implements DBAdaptorInfo {
     private List<DBUser> users = new ArrayList<>();
     private List<Event> events = new ArrayList<>();
     private List<UserEvent> userEvents = new ArrayList<>();
+    private Map<Integer, List<UserEvent>> userEventsByUserId = new HashMap<>();
 
     private Map<String, Integer> userMapping = new HashMap<>();
 
@@ -81,14 +83,15 @@ public class TestDBAdaptor implements DBAdaptorInfo {
     @Override
     public List<UserEvent> getUserEvents(String username) {
         Integer userId = userMapping.get(username);
-        if (userId == null) {
-            return Collections.emptyList();
-        }
-        return userEvents.stream().filter(e -> e.getUserId() == userId).collect(Collectors.toList());
+        return userEventsByUserId.get(userId);
     }
 
     public void setUsers(List<DBUser> users) {
         this.users = users;
+        userMapping.clear();
+        for (DBUser user : users) {
+            userMapping.put(user.getUsername(), user.getUserId());
+        }
     }
 
     public void setEvents(List<Event> events) {
@@ -97,6 +100,11 @@ public class TestDBAdaptor implements DBAdaptorInfo {
 
     public void setUserEvents(List<UserEvent> userEvents) {
         this.userEvents = userEvents;
+        userEventsByUserId.clear();
+        for (UserEvent userEvent : userEvents) {
+            List<UserEvent> userEventsList = userEventsByUserId.computeIfAbsent(userEvent.getUserId(), k -> new ArrayList<>());
+            userEventsList.add(userEvent);
+        }
     }
 
     public void setUserMapping(Map<String, Integer> userMapping) {
