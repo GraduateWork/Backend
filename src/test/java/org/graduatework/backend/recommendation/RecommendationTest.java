@@ -85,6 +85,10 @@ public class RecommendationTest {
         }
     }
 
+    private double calculateDCG(List<EventDto> events, List<UserEvent> userEvents) {
+        return 1;
+    }
+
     @Test
     public void testUserBasedRecommendation() throws FileNotFoundException {
         TestDBAdaptor dbAdaptor = new TestDBAdaptor();
@@ -102,13 +106,9 @@ public class RecommendationTest {
         dbAdaptor.setUserEvents(userEvents);
 
         setup("UserBasedRecommendationManager", dbAdaptor);
-        int k = 0;
         for (DBUser user : userMap.values()) {
-            k++;
-            if (k == 50) {
-                return;
-            }
-            List<EventDto> eventsDto = eventService.getEvents(user.getUsername(), null);
+            List<EventDto> eventsDto = eventService.getEvents(user.getUsername(), null, false);
+            double dcg = calculateDCG(eventsDto, dbAdaptor.getUserEvents(user.getUsername()));
             Assertions.assertNotNull(eventsDto);
         }
     }

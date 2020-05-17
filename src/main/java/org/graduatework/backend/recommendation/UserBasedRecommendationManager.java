@@ -17,7 +17,7 @@ public class UserBasedRecommendationManager implements RecommendationManager {
     }
 
     @Override
-    public List<EventDto> sortByPreference(List<EventDto> events, String username) {
+    public List<EventDto> sortByPreference(List<EventDto> events, String username, boolean savePrevMarks) {
         List<UserEvent> curUserEvents = dbAdaptor.getUserEvents(username);
         List<DBUser> users = dbAdaptor.getUsers();
         OptionalInt optional = IntStream.range(0, users.size())
@@ -79,7 +79,7 @@ public class UserBasedRecommendationManager implements RecommendationManager {
             }
         }
         for (int z = 0; z < events.size(); z++) {
-            if (!isMarkPresent[curUserIndex][z]) {
+            if (!isMarkPresent[curUserIndex][z] || !savePrevMarks) {
                 double nume = 0;
                 double deno = 0;
                 for (int i = 0; i < users.size(); i++) {

@@ -31,7 +31,7 @@ public class EventController {
             username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         } catch (Throwable e) {
         }
-        List<EventDto> events = eventService.getEvents(username == null || username.equals("anonymousUser") ? null : username, count);
+        List<EventDto> events = eventService.getEvents(username == null || username.equals("anonymousUser") ? null : username, count, true);
         if (events == null) {
             try {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Cannot get events");
