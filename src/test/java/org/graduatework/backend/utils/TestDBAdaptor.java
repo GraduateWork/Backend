@@ -110,4 +110,8 @@ public class TestDBAdaptor implements DBAdaptorInfo {
     public void setUserMapping(Map<String, Integer> userMapping) {
         this.userMapping = userMapping;
     }
+
+    public void setUserEventsByUserId(int userId, List<UserEvent> userEvents) {
+        userEventsByUserId.put(userId, userEvents);
+    }
 }

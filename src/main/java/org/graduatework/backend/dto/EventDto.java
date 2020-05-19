@@ -1,5 +1,6 @@
 package org.graduatework.backend.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.*;
@@ -15,6 +16,7 @@ public class EventDto {
     private String type;
     private String source;
     private boolean isFavorite;
+    private double mark;
     private Map<String, String> details = new HashMap<>();
 
     public static final Set<String> jsonFieldNames = new HashSet<>(Arrays.asList("title", "startTime", "endTime", "imgSrc", "description", "type", "source"));
@@ -118,5 +120,14 @@ public class EventDto {
 
     public void setSource(String source) {
         this.source = source;
+    }
+
+    @JsonIgnore
+    public double getMark() {
+        return mark;
+    }
+
+    public void setMark(double mark) {
+        this.mark = mark;
     }
 }

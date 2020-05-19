@@ -44,17 +44,33 @@ public class UserBasedRecommendationManager implements RecommendationManager {
             }
             double avgMark = userEvents.stream().mapToDouble(UserEvent::getMark).sum();
             avgMark /= userEvents.size();
+            avgMarks[i] = 0;
             for (int j = 0; j < userEvents.size(); j++) {
                 int eventIndex = eventIndexes.get(userEvents.get(j).getEventId());
                 marks[i][eventIndex] = userEvents.get(j).getMark() - avgMark;
+                avgMarks[i] += marks[i][eventIndex];
                 isMarkPresent[i][eventIndex] = true;
             }
-            avgMarks[i] = avgMark;
+            avgMarks[i] /= avgMark;
         }
-        for (int i = 0; i < users.size(); i++) {
-            for (int j = 0; j < events.size(); j++) {
+
+        for (int j = 0; j < events.size(); j++) {
+            double avgMark = 0;
+            int count = 0;
+            for (int i = 0; i < users.size(); i++) {
+                if (isMarkPresent[i][j]) {
+                    avgMark += marks[i][j];
+                    count++;
+                }
+                if (count > 0) {
+                    avgMark /= count;
+                } else {
+                    avgMark = 0;
+                }
+            }
+            for (int i = 0; i < users.size(); i++) {
                 if (!isMarkPresent[i][j]) {
-                    marks[i][j] = avgMarks[i];
+                    marks[i][j] = avgMark;
                 }
             }
         }
@@ -75,7 +91,11 @@ public class UserBasedRecommendationManager implements RecommendationManager {
                     norma += marks[i][j] * marks[i][j];
                 }
                 norma = Math.sqrt(norma);
-                similarity[i] = product / (curNorma * norma);
+                if (norma == 0) {
+                    similarity[i] = 0;
+                } else {
+                    similarity[i] = product / (curNorma * norma);
+                }
             }
         }
         for (int z = 0; z < events.size(); z++) {
@@ -88,7 +108,11 @@ public class UserBasedRecommendationManager implements RecommendationManager {
                         deno += similarity[i];
                     }
                 }
-                marks[curUserIndex][z] = avgMarks[curUserIndex] + nume / deno;
+                if (deno != 0) {
+                    marks[curUserIndex][z] = avgMarks[curUserIndex] + nume / deno;
+                } else {
+                    marks[curUserIndex][z] = avgMarks[curUserIndex];
+                }
             }
         }
         events.sort((a, b) -> {
@@ -96,6 +120,9 @@ public class UserBasedRecommendationManager implements RecommendationManager {
             double markB = marks[curUserIndex][eventIndexes.get(b.getEventId())];
             return Double.compare(markB, markA);
         });
+        for (EventDto event : events) {
+            event.setMark(marks[curUserIndex][eventIndexes.get(event.getEventId())]);
+        }
         return events;
     }
 }

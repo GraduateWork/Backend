@@ -15,7 +15,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class RecommendationTest {
 
@@ -85,12 +84,36 @@ public class RecommendationTest {
         }
     }
 
-    private double calculateDCG(List<EventDto> events, List<UserEvent> userEvents) {
-        return 1;
+    private double calculateNDCG(List<EventDto> events, List<UserEvent> userEvents) {
+        List<EventDto> filteredEvents = new ArrayList<>();
+        for (EventDto event : events) {
+            for (UserEvent userEvent : userEvents) {
+                if (userEvent.getEventId() == event.getEventId()) {
+                    filteredEvents.add(event);
+                    break;
+                }
+            }
+        }
+        List<UserEvent> copy = new ArrayList<>(userEvents);
+        copy.sort((a, b) -> Double.compare(b.getMark(), a.getMark()));
+        double dcg = 0;
+        int i = 0;
+        for (EventDto filteredEvent : filteredEvents) {
+            i++;
+            dcg += (Math.pow(2, filteredEvent.getMark()) - 1) / (Math.log(i + 1) / Math.log(2));
+        }
+        double idcg = 0;
+        i = 0;
+        for (UserEvent userEvent : copy) {
+            i++;
+            idcg += (Math.pow(2, userEvent.getMark()) - 1) / (Math.log(i + 1) / Math.log(2));
+        }
+        return dcg / idcg;
     }
 
     @Test
     public void testUserBasedRecommendation() throws FileNotFoundException {
+        Random rand = new Random(System.currentTimeMillis());
         TestDBAdaptor dbAdaptor = new TestDBAdaptor();
         Scanner moviesSc = new Scanner(new FileInputStream(new File(dataPath + "movies.csv")));
         Map<Integer, Event> eventMap = new HashMap<>();
@@ -106,10 +129,23 @@ public class RecommendationTest {
         dbAdaptor.setUserEvents(userEvents);
 
         setup("UserBasedRecommendationManager", dbAdaptor);
+        double avgNDCG = 0;
         for (DBUser user : userMap.values()) {
-            List<EventDto> eventsDto = eventService.getEvents(user.getUsername(), null, false);
-            double dcg = calculateDCG(eventsDto, dbAdaptor.getUserEvents(user.getUsername()));
+            List<UserEvent> eventsForUser = dbAdaptor.getUserEvents(user.getUsername());
+            List<UserEvent> newEventsForUser = new ArrayList<>();
+            for (UserEvent userEvent : eventsForUser) {
+                if (rand.nextInt(2) == 0) {
+                    newEventsForUser.add(userEvent);
+                }
+            }
+            dbAdaptor.setUserEventsByUserId(user.getUserId(), newEventsForUser);
+            List<EventDto> eventsDto = eventService.getEvents(user.getUsername(), null, true);
+            dbAdaptor.setUserEventsByUserId(user.getUserId(), eventsForUser);
+            double ndcg = calculateNDCG(eventsDto, dbAdaptor.getUserEvents(user.getUsername()));
+            avgNDCG += ndcg;
             Assertions.assertNotNull(eventsDto);
         }
+        avgNDCG /= userMap.size();
+        System.out.println("Average NDCG = " + avgNDCG);
     }
 }
