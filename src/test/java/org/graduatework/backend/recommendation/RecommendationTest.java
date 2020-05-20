@@ -100,7 +100,12 @@ public class RecommendationTest {
         int i = 0;
         for (EventDto filteredEvent : filteredEvents) {
             i++;
-            dcg += (Math.pow(2, filteredEvent.getMark()) - 1) / (Math.log(i + 1) / Math.log(2));
+            for (UserEvent userEvent : copy) {
+                if (filteredEvent.getEventId() == userEvent.getEventId()) {
+                    dcg += (Math.pow(2, userEvent.getMark()) - 1) / (Math.log(i + 1) / Math.log(2));
+                    break;
+                }
+            }
         }
         double idcg = 0;
         i = 0;

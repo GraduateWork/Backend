@@ -48,10 +48,9 @@ public class UserBasedRecommendationManager implements RecommendationManager {
             for (int j = 0; j < userEvents.size(); j++) {
                 int eventIndex = eventIndexes.get(userEvents.get(j).getEventId());
                 marks[i][eventIndex] = userEvents.get(j).getMark() - avgMark;
-                avgMarks[i] += marks[i][eventIndex];
                 isMarkPresent[i][eventIndex] = true;
             }
-            avgMarks[i] /= avgMark;
+            avgMarks[i] = avgMark;
         }
 
         for (int j = 0; j < events.size(); j++) {
