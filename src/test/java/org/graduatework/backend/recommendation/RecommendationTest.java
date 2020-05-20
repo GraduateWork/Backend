@@ -116,7 +116,7 @@ public class RecommendationTest {
         return dcg / idcg;
     }
 
-    @Test
+    //@Test
     public void testUserBasedRecommendation() throws FileNotFoundException {
         Random rand = new Random(System.currentTimeMillis());
         TestDBAdaptor dbAdaptor = new TestDBAdaptor();
