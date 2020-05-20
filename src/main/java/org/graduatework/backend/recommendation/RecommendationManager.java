@@ -5,5 +5,5 @@ import org.graduatework.backend.dto.EventDto;
 import java.util.List;
 
 public interface RecommendationManager {
-    List<EventDto> sortByPreference(List<EventDto> events, String username);
+    List<EventDto> sortByPreference(List<EventDto> events, String username, boolean savePrevMarks);
 }

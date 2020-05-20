@@ -45,7 +45,7 @@ public class EventService extends BaseService {
         }
     }
 
-    public List<EventDto> getEvents(String username, Integer count) {
+    public List<EventDto> getEvents(String username, Integer count, boolean savePrevMarks) {
         List<Event> dbEvents = dbAdaptor.getEvents();
         List<EventDto> events = new ArrayList<>();
         for (int i = 0; i < dbEvents.size(); i++) {
@@ -67,7 +67,7 @@ public class EventService extends BaseService {
                 }
             }
             if (recommendationManager != null) {
-                events = recommendationManager.sortByPreference(events, username);
+                events = recommendationManager.sortByPreference(events, username, savePrevMarks);
             }
         }
         List<EventDto> filteredEvents = events.stream().filter(e -> !e.isFavorite()).collect(Collectors.toList());
