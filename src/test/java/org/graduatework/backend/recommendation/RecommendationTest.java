@@ -116,6 +116,7 @@ public class RecommendationTest {
         return dcg / idcg;
     }
 
+
     private double calculateRMSE(List<EventDto> events, List<UserEvent> userEvents) {
         List<EventDto> filteredEvents = new ArrayList<>();
         for (EventDto event : events) {
@@ -145,8 +146,8 @@ public class RecommendationTest {
         maxRmse = Math.sqrt(maxRmse / filteredEvents.size());
         return 1 - rmse/maxRmse;
     }
-
-    @Test
+  
+    //@Test
     public void testUserBasedRecommendation() throws FileNotFoundException {
         Random rand = new Random(System.currentTimeMillis());
         TestDBAdaptor dbAdaptor = new TestDBAdaptor();
