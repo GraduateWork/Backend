@@ -116,6 +116,37 @@ public class RecommendationTest {
         return dcg / idcg;
     }
 
+
+    private double calculateRMSE(List<EventDto> events, List<UserEvent> userEvents) {
+        List<EventDto> filteredEvents = new ArrayList<>();
+        for (EventDto event : events) {
+            for (UserEvent userEvent : userEvents) {
+                if (userEvent.getEventId() == event.getEventId()) {
+                    filteredEvents.add(event);
+                    break;
+                }
+            }
+        }
+        List<UserEvent> copy = new ArrayList<>(userEvents);
+        copy.sort((a, b) -> Double.compare(b.getMark(), a.getMark()));
+        double rmse = 0;
+        double maxRmse = 0;
+        int i = 0;
+        for (EventDto filteredEvent : filteredEvents) {
+            i++;
+            for (UserEvent userEvent : copy) {
+                if (filteredEvent.getEventId() == userEvent.getEventId()) {
+                    rmse += Math.pow(filteredEvent.getMark() - userEvent.getMark(), 2);
+                    maxRmse += Math.pow(userEvent.getMark(), 2);
+                    break;
+                }
+            }
+        }
+        rmse = Math.sqrt(rmse / filteredEvents.size());
+        maxRmse = Math.sqrt(maxRmse / filteredEvents.size());
+        return 1 - rmse/maxRmse;
+    }
+  
     //@Test
     public void testUserBasedRecommendation() throws FileNotFoundException {
         Random rand = new Random(System.currentTimeMillis());
@@ -135,6 +166,7 @@ public class RecommendationTest {
 
         setup("UserBasedRecommendationManager", dbAdaptor);
         double avgNDCG = 0;
+        double avgRMSE = 0;
         for (DBUser user : userMap.values()) {
             List<UserEvent> eventsForUser = dbAdaptor.getUserEvents(user.getUsername());
             List<UserEvent> newEventsForUser = new ArrayList<>();
@@ -147,10 +179,14 @@ public class RecommendationTest {
             List<EventDto> eventsDto = eventService.getEvents(user.getUsername(), null, true);
             dbAdaptor.setUserEventsByUserId(user.getUserId(), eventsForUser);
             double ndcg = calculateNDCG(eventsDto, dbAdaptor.getUserEvents(user.getUsername()));
+            double rmse = calculateRMSE(eventsDto, dbAdaptor.getUserEvents(user.getUsername()));
             avgNDCG += ndcg;
+            avgRMSE += rmse;
             Assertions.assertNotNull(eventsDto);
         }
         avgNDCG /= userMap.size();
+        avgRMSE /= userMap.size();
         System.out.println("Average NDCG = " + avgNDCG);
+        System.out.println("Average RMSE = " + avgRMSE);
     }
 }
